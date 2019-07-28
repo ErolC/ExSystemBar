@@ -129,7 +129,7 @@ fun AppCompatActivity.setStatusBarBackground(drawable: Drawable, isBlack: Boolea
 /**
  * 设置背景颜色
  */
-fun AppCompatActivity.setStatusBarBackgroundColor(@ColorInt color: Int, isBlack: Boolean = true) {
+fun AppCompatActivity.setStatusBarColor(@ColorInt color: Int, isBlack: Boolean = true) {
     getStatusBarView((color == Color.WHITE) || isBlack).setBackgroundColor(color)
 }
 

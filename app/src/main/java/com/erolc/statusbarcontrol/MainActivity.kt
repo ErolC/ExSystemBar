@@ -16,13 +16,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 //        setStatusBarBackground(R.drawable.status_bar_bg)
-        setStatusBarBackgroundColor(Color.RED)
 //        statusBarColor = Color.RED
         findViewById<TextView>(R.id.text).setOnClickListener {
-            if (isShowStatusBar)
-                hideStatusBar()
-            else
-                showStatusBar()
+
         }
 
 

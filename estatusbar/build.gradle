@@ -11,12 +11,12 @@ static def getVersionCode(){
 def version_code = getVersionCode().toInteger()
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion 28
 
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion 16
+        targetSdkVersion 28
         versionCode version_code
         versionName "1.0.0"
 
