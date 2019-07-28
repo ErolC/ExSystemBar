@@ -1,14 +1,8 @@
 package com.erolc.statusbarcontrol
 
-import android.app.Activity
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import android.view.Window
-import android.view.WindowManager
 import android.widget.TextView
-import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 

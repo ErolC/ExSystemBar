@@ -7,10 +7,8 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.support.annotation.ColorInt
-import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
-import android.support.v7.app.AppCompatActivity
-import android.util.Log
+import android.support.v4.app.Fragment
 import android.util.TypedValue
 import android.view.View
 import android.view.Window.ID_ANDROID_CONTENT
@@ -75,7 +73,7 @@ fun Activity.setStatusBarTextColor(isBlack: Boolean, isReserved: Boolean = true)
 }
 
 
-private fun AppCompatActivity.clearLayout() {
+private fun Activity.clearLayout() {
     val findViewWithTag = contentView.findViewWithTag<View>(STATUS_BAR)
     if (findViewWithTag != null) {
         contentView.removeView(findViewWithTag)
@@ -86,7 +84,7 @@ private fun AppCompatActivity.clearLayout() {
 /**
  * 隐藏状态栏，手动在顶部下滑可重新显示，之后还会自动隐藏，
  */
-fun AppCompatActivity.hideStatusBar() {
+fun Activity.hideStatusBar() {
     findStatusBar()?.visibility = View.GONE
     window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
     window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
@@ -97,7 +95,7 @@ fun AppCompatActivity.hideStatusBar() {
 /**
  * 展示状态栏，与hideStatusBar()方法是一套的，
  */
-fun AppCompatActivity.showStatusBar() {
+fun Activity.showStatusBar() {
     findStatusBar()?.visibility = View.VISIBLE
     window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     window.setFlags(
@@ -112,7 +110,7 @@ fun AppCompatActivity.showStatusBar() {
  * @param drawableRes 状态栏背景的drawable文件资源
  * @param isBlack 状态栏字体颜色是否是黑色
  */
-fun AppCompatActivity.setStatusBarBackground(
+fun Activity.setStatusBarBackground(
     @DrawableRes drawableRes: Int,
     isBlack: Boolean = true
 ) {
@@ -122,14 +120,14 @@ fun AppCompatActivity.setStatusBarBackground(
 /**
  * 设置状态栏背景
  */
-fun AppCompatActivity.setStatusBarBackground(drawable: Drawable, isBlack: Boolean = true) {
+fun Activity.setStatusBarBackground(drawable: Drawable, isBlack: Boolean = true) {
     getStatusBarView(isBlack).background = drawable
 }
 
 /**
  * 设置背景颜色
  */
-fun AppCompatActivity.setStatusBarColor(@ColorInt color: Int, isBlack: Boolean = true) {
+fun Activity.setStatusBarColor(@ColorInt color: Int, isBlack: Boolean = true) {
     getStatusBarView((color == Color.WHITE) || isBlack).setBackgroundColor(color)
 }
 
@@ -137,7 +135,7 @@ fun AppCompatActivity.setStatusBarColor(@ColorInt color: Int, isBlack: Boolean =
 /**
  * 自定义StatusBar
  */
-private fun AppCompatActivity.getStatusBarView(isBlack: Boolean = true): View {
+private fun Activity.getStatusBarView(isBlack: Boolean = true): View {
     val view = findStatusBar() ?: View(this)
     view.tag = STATUS_BAR
     immersive()
@@ -154,14 +152,14 @@ private fun AppCompatActivity.getStatusBarView(isBlack: Boolean = true): View {
 /**
  * 是否为自定义的状态栏
  */
-private fun AppCompatActivity.isCustomizeStatusBar(): Boolean {
+private fun Activity.isCustomizeStatusBar(): Boolean {
     return contentView.findViewWithTag<View>(STATUS_BAR) != null
 }
 
 /**
  * 让系统的状态栏背景消失，计算一些数值
  */
-private fun AppCompatActivity.updateLayout(defaultTop:Int = -1) {
+private fun Activity.updateLayout(defaultTop:Int = -1) {
     val findViewById = window.decorView.findViewById<View>(R.id.action_mode_bar_stub)//这个view在标题栏存在时，不存在
     var paddingTop =
         if (findViewById == null) {
@@ -188,7 +186,7 @@ private fun Activity.findStatusBar(): View? {
  * 状态栏背景消失，内容层渗透到状态栏的区域里。
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-fun AppCompatActivity.immersive() {
+fun Activity.immersive() {
     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
     val findViewWithTag = findStatusBar()
     if (findViewWithTag != null) {
@@ -197,3 +195,54 @@ fun AppCompatActivity.immersive() {
     }
     statusBarColor = Color.TRANSPARENT
 }
+
+
+/*----------------------------fragment------------------------------------*/
+
+fun Fragment.setStatusBarBackground(@DrawableRes res: Int, isBack: Boolean = true) {
+    requireActivity().setStatusBarBackground(res,isBack)
+}
+
+fun Fragment.setStatusBarBackground(res: Drawable, isBack: Boolean = true) {
+    requireActivity().setStatusBarBackground(res,isBack)
+}
+
+fun Fragment.setStatusBarColor(@ColorInt color: Int, isBack: Boolean = true) {
+    requireActivity().setStatusBarColor(color,isBack)
+}
+
+fun Fragment.showStatusBar() {
+    requireActivity().showStatusBar()
+}
+fun Fragment.hideStatusBar(){
+    requireActivity().hideStatusBar()
+}
+
+fun Fragment.immersive(){
+    requireActivity().immersive()
+}
+/**
+ * 状态栏高度
+ */
+val Fragment.statusBarHeight
+    get() = run {
+        requireActivity().statusBarHeight
+    }
+/**
+ * 状态栏的背景颜色
+ */
+var Fragment.statusBarColor
+    get() = run {
+        requireActivity().statusBarColor
+    }
+    set(value) {
+       requireActivity().statusBarColor = value
+    }
+
+/**
+ * 状态栏是否显示
+ */
+val Fragment.isShowStatusBar
+    get() = requireActivity().isShowStatusBar
+
+
