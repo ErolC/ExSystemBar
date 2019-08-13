@@ -171,7 +171,6 @@ private fun Activity.updateLayout(defaultTop:Int = -1) {
         paddingTop = defaultTop
     }
     contentView.clipToPadding = false
-    contentView.setBackgroundColor(Color.RED)
     contentView.setPadding(0, paddingTop, 0, 0)
 }
 

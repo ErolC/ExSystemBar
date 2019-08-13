@@ -15,7 +15,7 @@ allprojects {
 在app.gradle文件加入
 ```gradle
 dependencies {
-	        implementation 'com.github.ErolC:StatusBarControl:1.0.3'
+	        implementation 'com.github.ErolC:StatusBarControl:1.0.4'
 	}
 ```
 ### API
@@ -30,7 +30,6 @@ setStatusBarBackground()//设置状态栏背景，
 setStatusBarColor()//设置状态栏背景颜色
 immersive()//状态栏背景消失，内容层渗透到状态栏的区域里。
 ```
-## 1.0.1
 ### 使用
 如果是kotlin，你可以直接这样
 ```kotlin
@@ -41,20 +40,9 @@ override fun onCreate(savedInstanceState: Bundle?){
 }
 
 ```
-如果是java
-```java
-public void onCreate(Bundle savedInstanceState){
-    StatusBarKt.setStatusBarBackground(this,R.drawable.status_bar);
-    int height = StatusBarKt.getStatusBarHeight(this);
-}
-```
 
-以上两段代码的效果是一样的。
 
-## 1.0.2
-新增kotlin的fragment环境支持，在fragment的回调中也能和在activity的回调中一样使用,也就是在fragment文件中，就无需再通过activity才能操作状态栏了。
-
-新增`StatusBar.java`类，用于仅有java的Android项目,方便java项目的使用。
+`StatusBar.java`类，用于仅有java的Android项目,方便java项目的使用。
 
 ```java
 public void onCreate(Bundle savedInstanceState){
