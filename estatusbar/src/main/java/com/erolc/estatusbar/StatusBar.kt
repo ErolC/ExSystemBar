@@ -4,6 +4,7 @@ package com.erolc.estatusbar
 import android.annotation.TargetApi
 import android.app.Activity
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.support.annotation.ColorInt
@@ -32,60 +33,66 @@ var Activity.statusBarColor
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor
         } else {
-            -1
+            val background = getStatusBarView().background
+            if (background is ColorDrawable) background.color else -1
         }
     }
+
     set(value) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = value
             setStatusBarTextColor(value == Color.WHITE)
-        }
-    }
+        } else {
+            getStatusBarView().setBackgroundColor(value)
 
+        }
+        setStatusBarTextColor(value == Color.WHITE)
+    }
 /**
  * 状态栏是否显示
  */
-val Activity.isShowStatusBar
-    get() = window.attributes.flags and WindowManager.LayoutParams.FLAG_FULLSCREEN == 0
+val Activity.isShowStatusBar get() = window.attributes.flags and WindowManager.LayoutParams.FLAG_FULLSCREEN == 0
 
 private val Activity.contentView get() = window.decorView.findViewById<FrameLayout>(ID_ANDROID_CONTENT)
 
-private val Activity.actionBarHeight
+/**
+ * 系统标题栏高度
+ */
+val Activity.actionBarHeight
     get() = run {
         val value = TypedValue()
         if (theme.resolveAttribute(android.R.attr.actionBarSize, value, true))
-            TypedValue.complexToDimensionPixelSize(value.data, resources.getDisplayMetrics())
+            TypedValue.complexToDimensionPixelSize(value.data, resources.displayMetrics)
         else
             0
     }
 
 /**
+ * 状态栏字体颜色是否为暗色
+ */
+val Activity.statusBarTextColorIsDark
+    @TargetApi(Build.VERSION_CODES.M)
+    get()=run{
+        window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR != 0
+    }
+/**
  * 状态栏字体的颜色
- * @param isBlack 由于状态栏字体颜色只有明和暗两种，true为明，false为暗
+ * @param isDark 由于状态栏字体颜色只有明和暗两种，true为明，false为暗
  * @param isReserved 由于状态栏字体颜色的设置会与之前的其他状态会有冲突，所以该参数是为是否保留之前的状态，true保留，false 不保留
  */
 @TargetApi(Build.VERSION_CODES.M)
-fun Activity.setStatusBarTextColor(isBlack: Boolean, isReserved: Boolean = true) {
+fun Activity.setStatusBarTextColor(isDark: Boolean, isReserved: Boolean = true) {
     val systemUiVisibility = window.decorView.systemUiVisibility
-    var option = if (isBlack) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else View.SYSTEM_UI_FLAG_VISIBLE
+    var option = if (isDark) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else View.SYSTEM_UI_FLAG_VISIBLE
     option = if (isReserved) option or systemUiVisibility else option
     window.decorView.systemUiVisibility = option
-}
-
-
-private fun Activity.clearLayout() {
-    val findViewWithTag = contentView.findViewWithTag<View>(STATUS_BAR)
-    if (findViewWithTag != null) {
-        contentView.removeView(findViewWithTag)
-    }
-    contentView.setPadding(0, 0, 0, 0)
 }
 
 /**
  * 隐藏状态栏，手动在顶部下滑可重新显示，之后还会自动隐藏，
  */
 fun Activity.hideStatusBar() {
-    findStatusBar()?.visibility = View.GONE
+    statusBar?.visibility = View.GONE
     window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
     window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
     if (isCustomizeStatusBar())
@@ -96,7 +103,7 @@ fun Activity.hideStatusBar() {
  * 展示状态栏，与hideStatusBar()方法是一套的，
  */
 fun Activity.showStatusBar() {
-    findStatusBar()?.visibility = View.VISIBLE
+    statusBar?.visibility = View.VISIBLE
     window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     window.setFlags(
         WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
@@ -108,35 +115,33 @@ fun Activity.showStatusBar() {
 
 /**
  * @param drawableRes 状态栏背景的drawable文件资源
- * @param isBlack 状态栏字体颜色是否是黑色
+ * @param isDark 状态栏字体颜色是否是黑色
  */
 fun Activity.setStatusBarBackground(
     @DrawableRes drawableRes: Int,
-    isBlack: Boolean = true
+    isDark: Boolean = true
 ) {
-    getStatusBarView(isBlack).setBackgroundResource(drawableRes)
+    getStatusBarView().setBackgroundResource(drawableRes)
+    setStatusBarTextColor(isDark)
 }
 
 /**
  * 设置状态栏背景
  */
-fun Activity.setStatusBarBackground(drawable: Drawable, isBlack: Boolean = true) {
-    getStatusBarView(isBlack).background = drawable
+fun Activity.setStatusBarBackground(drawable: Drawable, isDark: Boolean = true) {
+    getStatusBarView().background = drawable
+    setStatusBarTextColor(isDark)
 }
 
-/**
- * 设置背景颜色
- */
-fun Activity.setStatusBarColor(@ColorInt color: Int, isBlack: Boolean = true) {
-    getStatusBarView((color == Color.WHITE) || isBlack).setBackgroundColor(color)
+fun Activity.getStatusBarBackground():Drawable {
+    return getStatusBarView().background
 }
-
 
 /**
  * 自定义StatusBar
  */
-private fun Activity.getStatusBarView(isBlack: Boolean = true): View {
-    val view = findStatusBar() ?: View(this)
+private fun Activity.getStatusBarView(): View {
+    val view = statusBar ?: View(this)
     view.tag = STATUS_BAR
     immersive()
     updateLayout()
@@ -145,7 +150,6 @@ private fun Activity.getStatusBarView(isBlack: Boolean = true): View {
     layoutParams.height = statusBarHeight
     layoutParams.topMargin = -contentView.paddingTop
     view.layoutParams = layoutParams
-    setStatusBarTextColor(isBlack)
     return view
 }
 
@@ -159,7 +163,7 @@ private fun Activity.isCustomizeStatusBar(): Boolean {
 /**
  * 让系统的状态栏背景消失，计算一些数值
  */
-private fun Activity.updateLayout(defaultTop:Int = -1) {
+private fun Activity.updateLayout(defaultTop: Int = -1) {
     val findViewById = window.decorView.findViewById<View>(R.id.action_mode_bar_stub)//这个view在标题栏存在时，不存在
     var paddingTop =
         if (findViewById == null) {
@@ -177,9 +181,7 @@ private fun Activity.updateLayout(defaultTop:Int = -1) {
 /**
  * 获得自定义状态栏
  */
-private fun Activity.findStatusBar(): View? {
-    return contentView.findViewWithTag(STATUS_BAR)
-}
+private val Activity.statusBar :View? get() = contentView.findViewWithTag(STATUS_BAR)
 
 /**
  * 状态栏背景消失，内容层渗透到状态栏的区域里。
@@ -187,7 +189,7 @@ private fun Activity.findStatusBar(): View? {
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 fun Activity.immersive() {
     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-    val findViewWithTag = findStatusBar()
+    val findViewWithTag = statusBar
     if (findViewWithTag != null) {
         contentView.removeView(findViewWithTag)
         updateLayout(0)
@@ -198,28 +200,26 @@ fun Activity.immersive() {
 
 /*----------------------------fragment------------------------------------*/
 
-fun Fragment.setStatusBarBackground(@DrawableRes res: Int, isBack: Boolean = true) {
-    requireActivity().setStatusBarBackground(res,isBack)
+fun Fragment.setStatusBarBackground(@DrawableRes res: Int, isDark: Boolean = true) {
+    requireActivity().setStatusBarBackground(res, isDark)
 }
 
-fun Fragment.setStatusBarBackground(res: Drawable, isBack: Boolean = true) {
-    requireActivity().setStatusBarBackground(res,isBack)
-}
-
-fun Fragment.setStatusBarColor(@ColorInt color: Int, isBack: Boolean = true) {
-    requireActivity().setStatusBarColor(color,isBack)
+fun Fragment.setStatusBarBackground(res: Drawable, isDark: Boolean = true) {
+    requireActivity().setStatusBarBackground(res, isDark)
 }
 
 fun Fragment.showStatusBar() {
     requireActivity().showStatusBar()
 }
-fun Fragment.hideStatusBar(){
+
+fun Fragment.hideStatusBar() {
     requireActivity().hideStatusBar()
 }
 
-fun Fragment.immersive(){
+fun Fragment.immersive() {
     requireActivity().immersive()
 }
+
 /**
  * 状态栏高度
  */
@@ -235,7 +235,7 @@ var Fragment.statusBarColor
         requireActivity().statusBarColor
     }
     set(value) {
-       requireActivity().statusBarColor = value
+        requireActivity().statusBarColor = value
     }
 
 /**
@@ -244,4 +244,5 @@ var Fragment.statusBarColor
 val Fragment.isShowStatusBar
     get() = requireActivity().isShowStatusBar
 
+val Fragment.statusBarTextColorIsDark get() = requireActivity().statusBarTextColorIsDark
 

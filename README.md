@@ -51,3 +51,10 @@ public void onCreate(Bundle savedInstanceState){
    bar.getHeight();
 }
 ```
+## 注意
+```xml
+ <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+</style>
+```
+`windowDrawsSystemBarBackgrounds`这个属性会让状态栏设置失效。
