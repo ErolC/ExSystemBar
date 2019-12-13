@@ -7,11 +7,11 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.support.annotation.ColorInt
 import android.support.annotation.DrawableRes
 import android.support.v4.app.Fragment
 import android.util.TypedValue
 import android.view.View
+import android.view.View.SYSTEM_UI_FLAG_LOW_PROFILE
 import android.view.Window.ID_ANDROID_CONTENT
 import android.view.WindowManager
 import android.widget.FrameLayout
@@ -42,10 +42,8 @@ var Activity.statusBarColor
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = value
             setStatusBarTextColor(value == Color.WHITE)
-        } else {
-            getStatusBarView().setBackgroundColor(value)
-
         }
+        window.decorView.systemUiVisibility  =  window.decorView.systemUiVisibility  or SYSTEM_UI_FLAG_LOW_PROFILE
         setStatusBarTextColor(value == Color.WHITE)
     }
 /**
@@ -186,7 +184,6 @@ private val Activity.statusBar :View? get() = contentView.findViewWithTag(STATUS
 /**
  * 状态栏背景消失，内容层渗透到状态栏的区域里。
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 fun Activity.immersive() {
     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
     val findViewWithTag = statusBar
@@ -196,7 +193,6 @@ fun Activity.immersive() {
     }
     statusBarColor = Color.TRANSPARENT
 }
-
 
 /*----------------------------fragment------------------------------------*/
 
@@ -245,4 +241,3 @@ val Fragment.isShowStatusBar
     get() = requireActivity().isShowStatusBar
 
 val Fragment.statusBarTextColorIsDark get() = requireActivity().statusBarTextColorIsDark
-

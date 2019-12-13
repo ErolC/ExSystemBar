@@ -62,4 +62,12 @@ public class StatusBar {
     public void immersive() {
         StatusBarKt.immersive(reference.get());
     }
+
+    public void setTextColor(boolean isDark){
+        setTextColor(isDark,true);
+    }
+
+    public void setTextColor(boolean isDark, boolean isReserved) {
+        StatusBarKt.setStatusBarTextColor(reference.get(),isDark,isReserved);
+    }
 }

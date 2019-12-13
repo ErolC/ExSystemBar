@@ -1,6 +1,7 @@
 package com.erolc.statusbarcontrol
 
 import android.app.Activity
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -18,7 +19,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 //        findViewById<TextView>(R.id.text).systemUiVisibility = View.STATUS_BAR_VISIBLE
 //        hideStatusBar()
-        setStatusBarTextColor(false)
+//        setStatusBarTextColor(false)
+        statusBarColor = Color.BLACK
     }
 
     fun hide(view:View){
@@ -29,6 +31,10 @@ class MainActivity : AppCompatActivity() {
     }
     fun showWithColor(view: View) {
 
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
     }
 }
 
