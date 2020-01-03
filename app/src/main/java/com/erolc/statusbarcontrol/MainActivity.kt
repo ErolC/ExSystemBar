@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -20,17 +20,18 @@ class MainActivity : AppCompatActivity() {
 //        findViewById<TextView>(R.id.text).systemUiVisibility = View.STATUS_BAR_VISIBLE
 //        hideStatusBar()
 //        setStatusBarTextColor(false)
-        statusBarColor = Color.BLACK
+
+        setStatusBarBackground(R.drawable.status_bar_bg,false)
     }
 
     fun hide(view:View){
-        showToast(statusBarTextColorIsDark)
+        hideStatusBar()
     }
     fun showWithDrawable(view: View) {
         showToast(isShowStatusBar)
     }
     fun showWithColor(view: View) {
-
+        showStatusBar()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {

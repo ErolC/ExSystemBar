@@ -2,9 +2,10 @@ package com.erolc.estatusbar;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.v4.app.Fragment;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.fragment.app.Fragment;
 
 import java.lang.ref.SoftReference;
 
@@ -17,6 +18,14 @@ public class StatusBar {
 
     public StatusBar(Fragment fragment) {
         this(fragment.requireActivity());
+    }
+
+    public void debug(boolean isDebug) {
+        StatusBarKt.setStatusBarDebug(isDebug);
+    }
+
+    public boolean isDebug() {
+        return StatusBarKt.getStatusBarDebug();
     }
 
     public void setBackgroundColor(@ColorInt int color) {
@@ -63,11 +72,11 @@ public class StatusBar {
         StatusBarKt.immersive(reference.get());
     }
 
-    public void setTextColor(boolean isDark){
-        setTextColor(isDark,true);
+    public void setTextColor(boolean isDark) {
+        setTextColor(isDark, true);
     }
 
     public void setTextColor(boolean isDark, boolean isReserved) {
-        StatusBarKt.setStatusBarTextColor(reference.get(),isDark,isReserved);
+        StatusBarKt.setStatusBarTextColor(reference.get(), isDark, isReserved);
     }
 }
