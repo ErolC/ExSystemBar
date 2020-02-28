@@ -2,10 +2,13 @@ package com.erolc.estatusbar;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.MutableLiveData;
 
 import java.lang.ref.SoftReference;
 
@@ -78,5 +81,18 @@ public class StatusBar {
 
     public void setTextColor(boolean isDark, boolean isReserved) {
         StatusBarKt.setStatusBarTextColor(reference.get(), isDark, isReserved);
+    }
+
+    public MutableLiveData<Integer> curtain(int alpha, int red, int green, int blue) {
+        if (reference.get() instanceof FragmentActivity) {
+            return StatusBarKt.statusBarCurtain((FragmentActivity) reference.get(), alpha, red, green, blue);
+        } else {
+            Log.e("curtain", "curtain: this activity isn't extends FragmentActivity,can't use the function");
+        }
+        return null;
+    }
+
+    public MutableLiveData<Integer> curtain() {
+        return curtain(0, 255, 255, 255);
     }
 }

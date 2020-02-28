@@ -15,8 +15,15 @@ import android.view.Window.ID_ANDROID_CONTENT
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 
 const val STATUS_BAR = "statusBar"
+
+/**
+ * curtain 幕布；
+ */
 
 var statusBarDebug: Boolean
     get() = DEBUG
@@ -99,6 +106,12 @@ val Activity.statusBarTextColorIsDark
             false
         }
     }
+
+/**
+ * 获得自定义状态栏
+ */
+private val Activity.statusBar: View? get() = contentView.findViewWithTag(STATUS_BAR)
+
 
 /**
  * 状态栏字体的颜色
@@ -187,7 +200,7 @@ private fun Activity.getStatusBarView(): View {
  * 是否为自定义的状态栏
  */
 private fun Activity.isCustomizeStatusBar(): Boolean {
-    return contentView.findViewWithTag<View>(STATUS_BAR) != null//根据tag查看自定义状态栏是否存在
+    return statusBar != null//根据tag查看自定义状态栏是否存在
 }
 
 /**
@@ -211,9 +224,24 @@ private fun Activity.updateLayout(defaultTop: Int = -1) {
 }
 
 /**
- * 获得自定义状态栏
+ * 幕布，盖在内容布局上方的一块状态栏幕布，可以盖拜年
  */
-private val Activity.statusBar: View? get() = contentView.findViewWithTag(STATUS_BAR)
+fun FragmentActivity.statusBarCurtain(
+    alpha: Int = 0,
+    red: Int = 255,
+    green: Int = 255,
+    blue: Int = 255
+): MutableLiveData<Int> {
+    immersive()
+    val data: MutableLiveData<Int> = MutableLiveData()
+    data.value = alpha
+    data.observe(this, Observer {
+        var iAlpha: Int = it
+        if (iAlpha > 255) iAlpha = 255 else if (iAlpha < 0) iAlpha = 0
+        statusBarColor = Color.argb(iAlpha, red, green, blue)
+    })
+    return data
+}
 
 /**
  * 状态栏背景消失，内容层渗透到状态栏的区域里。
@@ -231,6 +259,7 @@ fun Activity.immersive() {
 }
 
 /*----------------------------fragment------------------------------------*/
+const val FRAGMENT_BAR = "fragment_bar"
 
 fun Fragment.setStatusBarBackground(@DrawableRes res: Int, isDark: Boolean = true) {
     requireActivity().setStatusBarBackground(res, isDark)
@@ -251,6 +280,18 @@ fun Fragment.hideStatusBar() {
 fun Fragment.immersive() {
     requireActivity().immersive()
 }
+
+fun Fragment.statusBarCurtain(
+    alpha: Int = 0,
+    red: Int = 255,
+    green: Int = 255,
+    blue: Int = 255
+): MutableLiveData<Int> = requireActivity().statusBarCurtain(
+    alpha,
+    red,
+    green,
+    blue
+)
 
 /**
  * 状态栏高度

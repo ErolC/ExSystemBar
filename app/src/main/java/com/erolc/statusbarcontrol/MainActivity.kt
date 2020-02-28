@@ -10,9 +10,12 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.erolc.estatusbar.*
 
 class MainActivity : AppCompatActivity() {
+    lateinit var data: MutableLiveData<Int>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,16 +23,19 @@ class MainActivity : AppCompatActivity() {
 //        findViewById<TextView>(R.id.text).systemUiVisibility = View.STATUS_BAR_VISIBLE
 //        hideStatusBar()
 //        setStatusBarTextColor(false)
-
-        setStatusBarBackground(R.drawable.status_bar_bg,false)
+        data = statusBarCurtain()
     }
 
-    fun hide(view:View){
-        hideStatusBar()
+    fun hide(view: View) {
+//        hideStatusBar()
+        data.value = data.value?.plus(10)
     }
+
     fun showWithDrawable(view: View) {
-        showToast(isShowStatusBar)
+        data.value = data.value?.minus(10)
+
     }
+
     fun showWithColor(view: View) {
         showStatusBar()
     }
@@ -40,6 +46,6 @@ class MainActivity : AppCompatActivity() {
 }
 
 
-fun <T> Activity.showToast(t:T){
-    Toast.makeText(this,"$t",Toast.LENGTH_SHORT).show()
+fun <T> Activity.showToast(t: T) {
+    Toast.makeText(this, "$t", Toast.LENGTH_SHORT).show()
 }
