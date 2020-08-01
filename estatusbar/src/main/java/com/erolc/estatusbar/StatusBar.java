@@ -12,6 +12,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.lang.ref.SoftReference;
 
+/**
+ * 这是一个状态栏包装，核心还是StatusBar.kt文件，将状态栏包装成一个对象。
+ */
 public class StatusBar {
     private SoftReference<Activity> reference;
 
@@ -55,11 +58,11 @@ public class StatusBar {
         return StatusBarKt.getStatusBarHeight(reference.get());
     }
 
-    public int getBackgroudColor() {
+    public int getBackgroundColor() {
         return StatusBarKt.getStatusBarColor(reference.get());
     }
 
-    public Drawable getBackgroud() {
+    public Drawable getBackground() {
         return StatusBarKt.getStatusBarBackground(reference.get());
     }
 
@@ -76,11 +79,7 @@ public class StatusBar {
     }
 
     public void setTextColor(boolean isDark) {
-        setTextColor(isDark, true);
-    }
-
-    public void setTextColor(boolean isDark, boolean isReserved) {
-        StatusBarKt.setStatusBarTextColor(reference.get(), isDark, isReserved);
+        StatusBarKt.setStatusBarTextColor(reference.get(), isDark);
     }
 
     public MutableLiveData<Integer> curtain(int alpha, int red, int green, int blue) {

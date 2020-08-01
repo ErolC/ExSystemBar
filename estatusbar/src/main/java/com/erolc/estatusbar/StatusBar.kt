@@ -19,17 +19,28 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
-const val STATUS_BAR = "statusBar"
 
 /**
- * curtain 幕布；
+ * 这是一个设置状态栏的类，用法很简单，唯一一个建议就是，在onResume回调中使用。
  */
+
+
+const val STATUS_BAR = "statusBar"
 
 var statusBarDebug: Boolean
     get() = DEBUG
     set(value) {
         DEBUG = value
     }
+
+val Activity.defStatusBarColor: Int
+    get() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            resources.getColor(R.color.colorPrimaryDark, theme)
+        else
+            resources.getColor(R.color.colorPrimaryDark)
+
+
 /**
  * 状态栏高度
  */
@@ -40,14 +51,41 @@ val Activity.statusBarHeight
         log("statusBarHeight is $i")
         i
     }
+
+
+/**
+ * 系统原生状态栏的颜色设置和获取
+ */
+var Activity.sysStatusBarColor: Int
+    get() {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            log("get statusBar color with System")
+            window.statusBarColor //系统状态栏的背景颜色
+        } else
+            Color.TRANSPARENT
+    }
+    set(value) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            log("get statusBar color with System")
+            window.statusBarColor = value //系统状态栏的背景颜色
+        } else
+            Color.TRANSPARENT
+    }
+
 /**
  * 状态栏的背景颜色
  */
 var Activity.statusBarColor
     get() = run {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            log("get statusBar color with System")
-            window.statusBarColor //系统状态栏的背景颜色
+            if (statusBar == null) {//如果statusBar不为空，那么就是使用了自定义的状态栏，那么就不需要系统状态栏的颜色了
+                log("get statusBar color with System")
+                window.statusBarColor //系统状态栏的背景颜色
+            } else {
+                log("get statusBar color with customize")
+                val background = statusBar?.background//自定义的状态栏背景颜色
+                if (background is ColorDrawable) background.color else -1//如果这个背景不是颜色，（自定义状态栏的背景可以是drawable），则返回-1
+            }
         } else {
             log("get statusBar color with customize")
             val background = getStatusBarView().background//自定义的状态栏背景颜色
@@ -56,8 +94,12 @@ var Activity.statusBarColor
     }
     set(value) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.statusBarColor = value//设置系统状态栏背景颜色
-            log("set the system's statusBarColor to $value color")
+            if (statusBar == null) {
+                window.statusBarColor = value//设置系统状态栏背景颜色
+                log("set the system's statusBarColor to $value color")
+            } else {
+                statusBar?.setBackgroundColor(value)
+            }
         } else {
             getStatusBarView().setBackgroundColor(value)
             log("set the customize's statusBarColor to $value color")
@@ -66,6 +108,7 @@ var Activity.statusBarColor
             window.decorView.systemUiVisibility or SYSTEM_UI_FLAG_LOW_PROFILE //将状态栏中不必要的图标隐藏掉
         setStatusBarTextColor(value == Color.WHITE)//设置自定义状态栏的字体颜色
     }
+
 /**
  * 状态栏是否显示
  */
@@ -116,14 +159,13 @@ private val Activity.statusBar: View? get() = contentView.findViewWithTag(STATUS
 /**
  * 状态栏字体的颜色
  * @param isDark 由于状态栏字体颜色只有明和暗两种，true为明，false为暗
- * @param isReserved 由于状态栏字体颜色的设置会与之前的其他状态会有冲突，所以该参数是为是否保留之前的状态，true保留，false 不保留
  * 目标api是M以上
  */
 @TargetApi(Build.VERSION_CODES.M)
-fun Activity.setStatusBarTextColor(isDark: Boolean, isReserved: Boolean = true) {
+fun Activity.setStatusBarTextColor(isDark: Boolean) {
     val systemUiVisibility = window.decorView.systemUiVisibility
     var option = if (isDark) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else View.SYSTEM_UI_FLAG_VISIBLE
-    option = if (isReserved) option or systemUiVisibility else option
+    option = option or systemUiVisibility
     window.decorView.systemUiVisibility = option
 }
 
@@ -175,16 +217,21 @@ fun Activity.setStatusBarBackground(drawable: Drawable, isDark: Boolean = true) 
     setStatusBarTextColor(isDark)
 }
 
-fun Activity.getStatusBarBackground(): Drawable {
-    return getStatusBarView().background
+/**
+ * 获取状态栏背景之前，需要先设置状态栏背景
+ */
+fun Activity.getStatusBarBackground(): Drawable? {
+    return statusBar?.background
 }
 
 /**
  * 自定义StatusBar
+ * 该方法被调用的时候就已经替换了系统状态栏
  */
 private fun Activity.getStatusBarView(): View {
     val view = statusBar ?: View(this)//获取自定义的状态栏，如果没有则新建
     view.tag = STATUS_BAR//取得其中的tag
+    view.setBackgroundColor(defStatusBarColor)
     immersive()//隐藏系统状态栏
     updateLayout()//更新布局
     contentView.addView(view)//将自定义状态栏添加到内容布局中，由于内容布局是frameLayout，那么会在顶部
@@ -224,7 +271,13 @@ private fun Activity.updateLayout(defaultTop: Int = -1) {
 }
 
 /**
- * 幕布，盖在内容布局上方的一块状态栏幕布，可以盖拜年
+ * 幕布，盖在内容布局上方的一块状态栏幕布
+ * 可以设定幕布的颜色，通过改变返回的LiveData中的值可以动态设定幕布的透明度
+ * 例如：
+ * var data: MutableLiveData<Int> = statusBarCurtain()
+ * data.value = data.value?.plus(10)//加10点透明度
+ *  data.value = data.value?.minus(10)//减10点透明度
+ *
  */
 fun FragmentActivity.statusBarCurtain(
     alpha: Int = 0,
@@ -236,7 +289,7 @@ fun FragmentActivity.statusBarCurtain(
     val data: MutableLiveData<Int> = MutableLiveData()
     data.value = alpha
     data.observe(this, Observer {
-        var iAlpha: Int = it
+        var iAlpha = it
         if (iAlpha > 255) iAlpha = 255 else if (iAlpha < 0) iAlpha = 0
         statusBarColor = Color.argb(iAlpha, red, green, blue)
     })
@@ -300,13 +353,12 @@ val Fragment.statusBarHeight
     get() = run {
         requireActivity().statusBarHeight
     }
+
 /**
  * 状态栏的背景颜色
  */
 var Fragment.statusBarColor
-    get() = run {
-        requireActivity().statusBarColor
-    }
+    get() = requireActivity().statusBarColor
     set(value) {
         requireActivity().statusBarColor = value
     }
@@ -318,3 +370,9 @@ val Fragment.isShowStatusBar
     get() = requireActivity().isShowStatusBar
 
 val Fragment.statusBarTextColorIsDark get() = requireActivity().statusBarTextColorIsDark
+
+var Fragment.sysStatusBarColor
+    get() = requireActivity().sysStatusBarColor
+    set(value) {
+        requireActivity().sysStatusBarColor = value
+    }
