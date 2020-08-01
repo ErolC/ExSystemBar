@@ -24,6 +24,11 @@ class MainActivity : AppCompatActivity() {
 //        hideStatusBar()
 //        setStatusBarTextColor(false)
         data = statusBarCurtain()
+        val statusBar = statusBar {
+            this.debug(true)
+
+        }
+
     }
 
     fun hide(view: View) {
