@@ -41,9 +41,6 @@ override fun onCreate(savedInstanceState: Bundle?){
 
 ```
 
-
-`StatusBar.java`类，用于仅有java的Android项目,方便java项目的使用。
-
 ```java
 public void onCreate(Bundle savedInstanceState){
    StatusBar bar = new StatusBar(this);
