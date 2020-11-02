@@ -2,7 +2,7 @@ package com.erolc.estatusbar
 
 import android.util.Log
 
-var DEBUG = false
+var DEBUG = true
 
 internal inline fun <reified T, R> T.loge(log: R) {
     if (DEBUG)
