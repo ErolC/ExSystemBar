@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.view.Window
@@ -14,6 +15,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.erolc.estatusbar.*
 
+/**
+ *
+ */
+//todo 找个时间写一个完整的demo然后在写篇文章，发布出去
 class MainActivity : AppCompatActivity() {
     lateinit var data: MutableLiveData<Int>
 
@@ -21,14 +26,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 //        findViewById<TextView>(R.id.text).systemUiVisibility = View.STATUS_BAR_VISIBLE
-//        hideStatusBar()
-//        setStatusBarTextColor(false)
-        data = statusBarCurtain()
-        val statusBar = statusBar {
-            this.debug(true)
-
-        }
-
     }
 
     fun hide(view: View) {
@@ -42,7 +39,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showWithColor(view: View) {
-        showStatusBar()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {

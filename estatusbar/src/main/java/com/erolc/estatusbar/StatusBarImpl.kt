@@ -3,7 +3,9 @@ package com.erolc.estatusbar
 
 import android.annotation.TargetApi
 import android.app.Activity
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Color.WHITE
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -13,10 +15,12 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.palette.graphics.Palette
 
 
 /**
@@ -25,26 +29,40 @@ import androidx.lifecycle.Observer
 const val STATUS_BAR = "statusBar"
 
 internal class StatusBarImpl(private val activity: Activity) : StatusBar {
+
     constructor(fragment: Fragment) : this(fragment.requireActivity())
 
     private val statusBar: View?
 
     init {
+        /**
+         * 得到内容中状态栏部分view，由于这个view是我自己设置的，所以不一定存在，
+         */
         statusBar = activity.contentView.findViewWithTag(STATUS_BAR)
     }
 
+    /**
+     * 得到内容部分view
+     */
     private val Activity.contentView
         get() = window.decorView.findViewById<FrameLayout>(
             Window.ID_ANDROID_CONTENT
         )
 
-
+    /**
+     * 默认的状态栏颜色
+     */
     private val Activity.defStatusBarColor: Int
         get() =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 resources.getColor(R.color.colorPrimaryDark, theme)
             else
                 resources.getColor(R.color.colorPrimaryDark)
+
+
+    private fun isLightColor(color: Int): Boolean {
+        return ColorUtils.calculateLuminance(color) >= 0.5
+    }
 
     /**
      * 自定义StatusBar
@@ -59,7 +77,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         contentView.addView(view)//将自定义状态栏添加到内容布局中，由于内容布局是frameLayout，那么会在顶部
         val layoutParams = view.layoutParams as FrameLayout.LayoutParams
         layoutParams.height = getHeight()//设置自定义状态栏高度
-        loge("the contentView.paddingTop is ${contentView.paddingTop}")
+        logi("the contentView.paddingTop is ${contentView.paddingTop}")
         layoutParams.topMargin = -contentView.paddingTop
         view.layoutParams = layoutParams//使用布局参数，使其生效
         return view//这里就得到最终的自定义状态栏
@@ -139,7 +157,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
      * 是否为自定义的状态栏
      */
 
-    override fun isCustomizeStatusBar(): Boolean {
+    private fun isCustomizeStatusBar(): Boolean {
         return statusBar != null//根据tag查看自定义状态栏是否存在
     }
 
@@ -183,7 +201,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
                 activity.window.statusBarColor //系统状态栏的背景颜色
             } else {
                 log("get statusBar color with customize")
-                val background = statusBar?.background//自定义的状态栏背景颜色
+                val background = statusBar.background//自定义的状态栏背景颜色
                 if (background is ColorDrawable) background.color else -1//如果这个背景不是颜色，（自定义状态栏的背景可以是drawable），则返回-1
             }
         } else {
@@ -207,14 +225,15 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         }
         activity.window.decorView.systemUiVisibility =
             activity.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LOW_PROFILE //将状态栏中不必要的图标隐藏掉
-        setTextColor(color == Color.WHITE)//设置自定义状态栏的字体颜色
-
+        setTextColor(isLightColor(color))//设置自定义状态栏的字体颜色
     }
 
     override fun setBackground(drawable: Int) {
         activity.getStatusBarView().setBackgroundResource(drawable)
-        //todo 通过颜色提取器提取背景颜色，然后再决定字体颜色
-//        activity.setStatusBarTextColor(isDark)
+        val bitmap = BitmapFactory.decodeResource(activity.resources, drawable)
+        val generate = Palette.from(bitmap).generate()
+        val vibrantColor = generate.getVibrantColor(WHITE)
+        setTextColor(isLightColor(vibrantColor))
     }
 
     override fun setBackground(drawable: Drawable) {
@@ -284,6 +303,6 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
             activity.contentView.removeView(findViewWithTag)
             activity.updateLayout(0)
         }
-        setBackgroundColor(Color.TRANSPARENT)
+        setSysBackgroundColor(Color.TRANSPARENT)
     }
 }

@@ -5,22 +5,23 @@ import androidx.fragment.app.Fragment
 
 
 fun Activity.statusBar(body: StatusBar.() -> Unit): StatusBar {
-    val statusBar = StatusBarImpl(this)
+    val statusBar = getStatusBar()
     statusBar.body()
     return statusBar
-}
-
-fun Activity.statusBar(): StatusBar {
-    return StatusBarImpl(this)
-}
-
-fun Fragment.statusBar(): StatusBar {
-    return StatusBarImpl(this)
 }
 
 fun Fragment.statusBar(body: StatusBar.() -> Unit): StatusBar {
-    val statusBar = StatusBarImpl(this)
+    val statusBar = getStatusBar()
     statusBar.body()
     return statusBar
+}
+
+
+fun Activity.getStatusBar(): StatusBar {
+    return StatusBarImpl(this)
+}
+
+fun Fragment.getStatusBar(): StatusBar {
+    return StatusBarImpl(this)
 }
 
