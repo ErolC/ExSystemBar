@@ -26,9 +26,9 @@ import androidx.palette.graphics.Palette
 /**
  * 这是一个设置状态栏的类，用法很简单，唯一一个建议就是，在onResume回调中使用。
  */
-const val STATUS_BAR = "statusBar"
 
 internal class StatusBarImpl(private val activity: Activity) : StatusBar {
+    private val STATUS_BAR = "statusBar"
 
     constructor(fragment: Fragment) : this(fragment.requireActivity())
 
