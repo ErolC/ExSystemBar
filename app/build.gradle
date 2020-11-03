@@ -3,6 +3,25 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
+def app_name = "exstatusbar"
+def keypass="YxTi9z16AK3ngl"
+
+
+static def getVersionCode() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMddHH')
+    return formattedDate
+}
+
+def version_code = getVersionCode().toInteger()
+
+def renameAPK(variant, defaultConfig, appName) {
+    variant.outputs.all {
+        def formattedDate = new Date().format('yyyyMMddHHmm')
+        def fileName = appName + "_" + formattedDate + ".apk"
+        outputFileName = fileName
+    }
+}
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -10,13 +29,35 @@ android {
         applicationId "com.erolc.statusbarcontrol"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode version_code
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs{
+        release{
+            storeFile file("../project.jks")
+            storePassword "$keypass"
+            keyAlias "$app_name"
+            keyPassword "$keypass"
+            applicationVariants.all { variant ->
+                if (variant.buildType.name == "release") {
+                    renameAPK(variant, defaultConfig, "statusBar")
+                }
+            }
+        }
+        debug {
+            storeFile file("../project.jks")
+            storePassword "$keypass"
+            keyAlias "$app_name"
+            keyPassword "$keypass"
+        }
+    }
+
+
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig = signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

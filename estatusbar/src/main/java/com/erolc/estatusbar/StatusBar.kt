@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.MutableLiveData
 
 /**
- * @author ErolC
+ * @author ErolC 28/10/2020
  * 状态栏,该接口是对状态栏进行规范
  *  可以加上一些对于状态栏的处理方案，比如在入侵的时候给外界反馈一个高度，以实现内容入侵但是内容和状态栏不会重叠
  *  //todo 待后续测试

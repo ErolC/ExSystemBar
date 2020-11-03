@@ -23,15 +23,17 @@ import androidx.lifecycle.Observer
 
 
 /**
- * 这是一个设置状态栏的类，用法很简单，唯一一个建议就是，在onResume回调中使用。
+ *
+ * @author erolc 28/10/2020
+ * 这是一个设置状态栏的实现类，用法很简单，唯一一个建议就是，在onResume回调中使用。
+ * 由于整个app都是统一使用同一个statusBar，所以需要在每次回到当前界面就需要设置最新的状态栏样式，
+ * 否者会由于在其他地方的脏样式数据污染了当前界面的样式，所以建议在onResume回调中使用，这样就可以保证了
+ *
  */
 
 internal class StatusBarImpl(private val activity: Activity) : StatusBar {
     private val STATUS_BAR = "statusBar"
     private val STATUS_BAR_BG = "statusBarBg"
-
-
-    constructor(fragment: Fragment) : this(fragment.requireActivity())
 
     private var statusBar: View?
 
@@ -40,7 +42,22 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
          * 得到内容中状态栏部分view，由于这个view是我自己设置的，所以不一定存在，
          */
         initBg()
-        statusBar = activity.contentView.findViewWithTag(STATUS_BAR) ?: activity.getStatusBarView()//通过一开始就使用自定义状态栏解决在运行时第一次使用的时候会出现布局底部留空
+        statusBar = activity.contentView.findViewWithTag(STATUS_BAR)
+            ?: activity.getStatusBarView()//通过一开始就使用自定义状态栏解决在运行时第一次使用的时候会出现布局底部留空
+        adapterBang()
+
+    }
+
+    /**
+     * 设置该方法，在调用[hide]的时候，是刘海屏，内容部分布局也会侵入到状态栏部分，如果刘海挡住了你的部分内容，可以将上边距设置为[getHeight]的高度避免
+     */
+    private fun adapterBang() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val lp: WindowManager.LayoutParams = activity.window.attributes
+            lp.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            activity.window.attributes = lp
+        }
     }
 
     /**
@@ -342,6 +359,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         hideStatusBg()
         findStatusBar()?.visibility = View.GONE
         activity.updateLayout()
+
     }
 
     override fun show() {
