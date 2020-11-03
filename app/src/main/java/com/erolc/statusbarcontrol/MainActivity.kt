@@ -1,19 +1,14 @@
 package com.erolc.statusbarcontrol
 
 import android.app.Activity
-import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
-import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import com.erolc.estatusbar.*
+import androidx.appcompat.app.AppCompatActivity
+import com.erolc.estatusbar.StatusBar
+import com.erolc.estatusbar.statusBar
 
 /**
  *
@@ -53,9 +48,6 @@ class MainActivity : AppCompatActivity() {
         statusBar.setBackgroundColor(Color.RED)
     }
 
-    /**
-     * 在界面完全加载完成之后，第一次使用自定义状态栏，会有问题
-     */
     fun showWithDrawable(view: View) {
         statusBar.setBackground(R.drawable.status_bar_bg)
     }
@@ -68,13 +60,9 @@ class MainActivity : AppCompatActivity() {
         statusBar.setSysBackgroundColor(Color.GRAY)
     }
 
-    /**
-     * 这里存在两个问题，
-     * 第二个，setTextColor是否正确
-     */
     fun switchTextColor(view: View) {
         val textColorIsDark = statusBar.textColorIsDark()
-        Log.e("TAG", "switchTextColor: $textColorIsDark" )
+        Log.e("TAG", "switchTextColor: $textColorIsDark")
         statusBar.setTextColor(!textColorIsDark)
     }
 

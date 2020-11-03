@@ -28,18 +28,48 @@ import androidx.lifecycle.Observer
 
 internal class StatusBarImpl(private val activity: Activity) : StatusBar {
     private val STATUS_BAR = "statusBar"
+    private val STATUS_BAR_BG = "statusBarBg"
+
 
     constructor(fragment: Fragment) : this(fragment.requireActivity())
 
-    private var isHide = false
-
-    private val statusBar: View?
+    private var statusBar: View?
 
     init {
         /**
          * 得到内容中状态栏部分view，由于这个view是我自己设置的，所以不一定存在，
          */
-        statusBar = activity.contentView.findViewWithTag(STATUS_BAR)
+        initBg()
+        statusBar = activity.contentView.findViewWithTag(STATUS_BAR) ?: activity.getStatusBarView()//通过一开始就使用自定义状态栏解决在运行时第一次使用的时候会出现布局底部留空
+    }
+
+    /**
+     * 该背景解决显示系统状态栏的时候会出现白底的现象
+     */
+    private fun initBg() {
+        val view = View(activity)
+        view.tag = STATUS_BAR_BG
+        view.setBackgroundColor(activity.defStatusBarColor)
+        activity.contentView.addView(view)
+        val layoutParams = view.layoutParams as FrameLayout.LayoutParams
+        layoutParams.height = getHeight()
+        layoutParams.topMargin = -getHeight()
+        view.layoutParams = layoutParams
+    }
+
+    private fun hideStatusBg() {
+        val view = activity.contentView.findViewWithTag<View>(STATUS_BAR_BG)
+        view.visibility = View.GONE
+    }
+
+    private fun showStatusBg() {
+        val view = activity.contentView.findViewWithTag<View>(STATUS_BAR_BG)
+        view.visibility = View.VISIBLE
+    }
+
+    private fun statusBgColor(color: Int) {
+        val view = activity.contentView.findViewWithTag<View>(STATUS_BAR_BG)
+        view.setBackgroundColor(color)
     }
 
     /**
@@ -77,7 +107,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         immersive()//隐藏系统状态栏
         updateLayout()//更新布局
 
-        if (!isHide && findStatusBar == null) {
+        if (findStatusBar == null) {
             contentView.addView(view)//将自定义状态栏添加到内容布局中，由于内容布局是frameLayout，那么会在顶部
             val layoutParams = view.layoutParams as FrameLayout.LayoutParams
             layoutParams.height = getHeight()//设置自定义状态栏高度
@@ -126,7 +156,6 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
                 false
             }
         }
-
 
 
     private val Activity.statusBarImmersive
@@ -182,6 +211,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         findStatusBar()?.apply {
             background = null
             activity.contentView.removeView(this)
+            statusBar = null
         }
     }
 
@@ -267,8 +297,10 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
     override fun setSysBackgroundColor(color: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             log("get statusBar color with System")
+            statusBgColor(color)
             activity.window.statusBarColor = color //系统状态栏的背景颜色
             clearStatusBar()
+            activity.updateLayout()
         } else
             Color.TRANSPARENT
     }
@@ -307,11 +339,9 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
-        if (isCustomizeStatusBar()) {
-            findStatusBar()?.visibility = View.GONE
-            activity.updateLayout()
-        }
-        isHide = true
+        hideStatusBg()
+        findStatusBar()?.visibility = View.GONE
+        activity.updateLayout()
     }
 
     override fun show() {
@@ -320,33 +350,21 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
             WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
         )
-        if (isCustomizeStatusBar()) {
-            findStatusBar()?.visibility = View.VISIBLE
-            activity.updateLayout()
-        }
-        isHide = false
+        showStatusBg()
+        findStatusBar()?.visibility = View.VISIBLE
+        activity.updateLayout()
     }
 
     override fun immersive() {
         log("immersive")
-
         val window = activity.window
         window.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-
-        findStatusBar()?.apply {
-            activity.updateLayout(0)
-        }
+        activity.updateLayout(0)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             log("get statusBar color with System")
             activity.window.statusBarColor = Color.TRANSPARENT
         } else
             Color.TRANSPARENT
-    }
-
-    private fun unImmersive() {
-        val window = activity.window
-        window.decorView.systemUiVisibility =
-            if (textColorIsDark()) SYSTEM_UI_FLAG_VISIBLE else SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
     }
 }
