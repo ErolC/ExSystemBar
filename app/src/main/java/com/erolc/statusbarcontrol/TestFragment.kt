@@ -39,7 +39,7 @@ class TestFragment : Fragment() {
         statusBar = statusBar {
             when (index) {
                 0 -> {
-                    setBackgroundColor(Color.BLUE)
+//                    setBackgroundColor(Color.BLUE)
                     binding!!.desc.text = "状态栏是蓝色"
                 }
                 1 -> {
@@ -52,18 +52,8 @@ class TestFragment : Fragment() {
                 }
             }
         }
-        defStatusBar = restoreStatusBar {
-
-        }
 
         return binding!!.root
-    }
-
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser && this::defStatusBar.isInitialized) {
-            statusBar = defStatusBar()
-        }
     }
 
     inner class ClickHandler {

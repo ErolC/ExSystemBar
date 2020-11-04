@@ -48,6 +48,9 @@ class MainActivity : AppCompatActivity() {
         statusBar.show()
     }
 
+    fun showRedColor(view: View) {
+        statusBar.setBackgroundColor(Color.RED)
+    }
 
     fun showWithDrawable(view: View) {
         statusBar.setBackground(R.drawable.status_bar_bg)

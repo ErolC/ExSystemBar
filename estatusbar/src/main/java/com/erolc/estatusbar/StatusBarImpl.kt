@@ -102,12 +102,6 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
     /**
      * 默认的状态栏颜色
      */
-    private val Activity.defStatusBarColor: Int
-        get() =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                resources.getColor(R.color.colorPrimaryDark, theme)
-            else
-                resources.getColor(R.color.colorPrimaryDark)
 
 
     private fun isLightColor(color: Int): Boolean {

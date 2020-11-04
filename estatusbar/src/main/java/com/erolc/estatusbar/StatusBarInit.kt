@@ -1,6 +1,7 @@
 package com.erolc.estatusbar
 
 import android.app.Activity
+import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
@@ -33,11 +34,15 @@ fun FragmentActivity.statusBar(body: StatusBar.() -> Unit): StatusBar {
  * 的脏statusBar数据对该页面的影响。目前只有在该方法中设置的样式才会保留。后面会加入另外的一些设置，让在外部的设置也可以保留
  */
 fun Fragment.statusBar(body: StatusBar.() -> Unit): StatusBar {
-    val statusBar = getStatusBar()
+    val statusBar = getFragmentStatusBar()
+    statusBar.body()
     lifecycle.addObserver(object : LifecycleEventObserver {
         override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
             if (event == Lifecycle.Event.ON_RESUME) {
-                statusBar.body()
+                (statusBar as? FragmentStatusBar)?.restore()
+            } else if (event == Lifecycle.Event.ON_DESTROY) {
+                //如果设置了FragmentStatusBar，那么需要在这里将该对象从工厂中移除
+                StatusBarFactory.clear(this@statusBar)
             }
         }
     })
@@ -54,19 +59,33 @@ fun Fragment.statusBar(body: StatusBar.() -> Unit): StatusBar {
  *  该方法后面可能会废弃
  */
 fun Fragment.restoreStatusBar(body: StatusBar.() -> Unit): StatusBarRestore {
-    val statusBar = getStatusBar()
+    val statusBar = getFragmentStatusBar()
+    statusBar.body()
+    lifecycle.addObserver(object : LifecycleEventObserver {
+        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                //如果设置了FragmentStatusBar，那么需要在这里将该对象从工厂中移除
+                StatusBarFactory.clear(this@restoreStatusBar)
+            }
+        }
+    })
     return {
-        statusBar.body()
+        (statusBar as? FragmentStatusBar)?.restore()
         statusBar
     }
 }
-
 
 fun Activity.getStatusBar(): StatusBar {
     return StatusBarFactory.create(this)
 }
 
-internal fun Fragment.getStatusBar(): StatusBar {
-    return StatusBarFactory.create(requireActivity())
+internal fun Fragment.getFragmentStatusBar(): StatusBar {
+    return StatusBarFactory.create(this)
 }
 
+internal val Activity.defStatusBarColor: Int
+    get() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            resources.getColor(R.color.colorPrimaryDark, theme)
+        else
+            resources.getColor(R.color.colorPrimaryDark)
