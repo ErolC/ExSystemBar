@@ -59,8 +59,9 @@ interface StatusBar {
 
     /**
      * 隐藏状态栏
+     * @param isAdapterBang 是否适配刘海屏，如果[true]，那么内容会完全入侵到刘海位置，如果[false]则刘海部分会由黑色填充
      */
-    fun hide()
+    fun hide(isAdapterBang:Boolean = true)
 
     /**
      * 显示状态栏

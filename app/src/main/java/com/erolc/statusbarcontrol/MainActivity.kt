@@ -15,15 +15,14 @@ import com.erolc.estatusbar.statusBar
 import com.erolc.statusbarcontrol.databinding.ActivityMainBinding
 
 /**
- *
+ *  demo 在一个activity使用多个fragment，然后让每个fragment的状态栏都不一样，然后还有是一个次级activity
  */
 class MainActivity : AppCompatActivity() {
     private lateinit var statusBar: StatusBar
-    private val newInstance  = TestFragment.newInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       val binding =
+        val binding =
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 //        statusBar = getStatusBar()
 //        AndroidBug5497Workaround.assistActivity(this)
@@ -31,23 +30,22 @@ class MainActivity : AppCompatActivity() {
 //        val exStatusBar:StatusBar = ExStatusBar(this)
 //        或者
         statusBar = statusBar {
-            setBackground(R.drawable.status_bar_bg)
         }
 
 
     }
 
-
-    fun hide(view: View) {
-//        statusBar.hide()
+    fun next(view: View) {
         val intent = Intent(this, TestActivity::class.java)
         startActivity(intent)
-//        supportFragmentManager.beginTransaction().add(R.id.fLayout, newInstance).commit()
+    }
+
+    fun hide(view: View) {
+        statusBar.hide()
     }
 
     fun show(view: View) {
-//        statusBar.show()
-        supportFragmentManager.beginTransaction().remove(newInstance).commit()
+        statusBar.show()
     }
 
 

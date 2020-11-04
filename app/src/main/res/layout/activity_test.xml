@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -9,81 +9,17 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:background="#257CFD"
             android:layout_height="match_parent"
             tools:context=".MainActivity">
 
-        <TextView
-                android:id="@+id/text"
+        <androidx.viewpager.widget.ViewPager
+                android:id="@+id/pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="这里是Fragment布局顶部"
-                android:textColor="#fff"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-                android:id="@+id/hide"
-                android:onClick="hide"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:text="隐藏"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <Button
-                android:id="@+id/show"
-                android:onClick="show"
-                app:layout_constraintBottom_toTopOf="@id/hide"
-                android:text="展示"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <Button
-                android:id="@+id/showColor"
-                app:layout_constraintBottom_toTopOf="@id/show"
-                android:text="蓝色背景色"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <Button
-                android:id="@+id/drawableBg"
-                android:onClick="showWithDrawable"
-                app:layout_constraintBottom_toTopOf="@id/showColor"
-                android:text="资源背景"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        <Button
-                android:id="@+id/theHeight"
-                android:onClick="getStatusBarHeight"
-                app:layout_constraintBottom_toTopOf="@id/drawableBg"
-                android:text="获取高度"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <Button
-                android:id="@+id/sysBg"
-                android:onClick="showSysBg"
-                app:layout_constraintBottom_toTopOf="@id/theHeight"
-                android:text="设置系统背景色"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <Button
-                android:id="@+id/switchTextColor"
-                android:onClick="switchTextColor"
-                app:layout_constraintBottom_toTopOf="@id/sysBg"
-                android:text="切换文字颜色"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <Button
-                android:onClick="immersive"
-                app:layout_constraintBottom_toTopOf="@id/switchTextColor"
-                android:text="入侵状态栏"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

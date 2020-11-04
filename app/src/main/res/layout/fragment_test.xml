@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+                name="clickHandler"
+                type="com.erolc.statusbarcontrol.TestFragment.ClickHandler" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#257CFD"
+            tools:context=".MainActivity">
+
+        <TextView
+                android:id="@+id/text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="这里是Fragment布局顶部"
+                android:textColor="#fff"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                app:layout_constraintBottom_toTopOf="@id/imm"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="状态栏是红色" />
+
+        <Button
+                android:id="@+id/hide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickHandler::hide}"
+                android:text="隐藏"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        <Button
+                android:id="@+id/show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickHandler::show}"
+                android:text="展示"
+                app:layout_constraintBottom_toTopOf="@id/hide" />
+
+        <Button
+                android:id="@+id/showColor"
+                android:layout_width="match_parent"
+                android:onClick="@{clickHandler::randomColor}"
+                android:layout_height="wrap_content"
+                android:text="随机背景色"
+                app:layout_constraintBottom_toTopOf="@id/show" />
+
+        <Button
+                android:id="@+id/drawableBg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickHandler::showWithDrawable}"
+                android:text="资源背景"
+                app:layout_constraintBottom_toTopOf="@id/showColor" />
+
+        <Button
+                android:id="@+id/theHeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickHandler::getStatusBarHeight}"
+                android:text="获取高度"
+                app:layout_constraintBottom_toTopOf="@id/drawableBg" />
+
+        <Button
+                android:id="@+id/sysBg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickHandler::showSysBg}"
+                android:text="设置系统背景色"
+                app:layout_constraintBottom_toTopOf="@id/theHeight" />
+
+        <Button
+                android:id="@+id/switchTextColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickHandler::switchTextColor}"
+                android:text="切换文字颜色"
+                app:layout_constraintBottom_toTopOf="@id/sysBg" />
+
+        <Button
+                android:id="@+id/imm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{clickHandler::immersive}"
+                android:text="入侵状态栏"
+                app:layout_constraintBottom_toTopOf="@id/switchTextColor" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

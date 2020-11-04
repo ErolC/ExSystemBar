@@ -44,18 +44,20 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         initBg()
         statusBar = activity.contentView.findViewWithTag(STATUS_BAR)
             ?: activity.getStatusBarView()//通过一开始就使用自定义状态栏解决在运行时第一次使用的时候会出现布局底部留空
-        adapterBang()
-
     }
 
     /**
      * 设置该方法，在调用[hide]的时候，是刘海屏，内容部分布局也会侵入到状态栏部分，如果刘海挡住了你的部分内容，可以将上边距设置为[getHeight]的高度避免
      */
-    private fun adapterBang() {
+    private fun adapterBang(isAdapterBang: Boolean = true) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val lp: WindowManager.LayoutParams = activity.window.attributes
-            lp.layoutInDisplayCutoutMode =
+            lp.layoutInDisplayCutoutMode = if (isAdapterBang) {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            } else {
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
+            }
+
             activity.window.attributes = lp
         }
     }
@@ -294,7 +296,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
 
     override fun setBackgroundColor(color: Int) {
         activity.getStatusBarView().setBackgroundColor(color)
-        val lightColor = !isLightColor(color)
+        val lightColor = isLightColor(color)
         setTextColor(lightColor)//设置自定义状态栏的字体颜色
     }
 
@@ -316,6 +318,8 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
             log("get statusBar color with System")
             statusBgColor(color)
             activity.window.statusBarColor = color //系统状态栏的背景颜色
+            val lightColor = isLightColor(color)
+            setTextColor(lightColor)//设置自定义状态栏的字体颜色
             clearStatusBar()
             activity.updateLayout()
         } else
@@ -350,7 +354,8 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         activity.window.decorView.systemUiVisibility = option
     }
 
-    override fun hide() {
+    override fun hide(isAdapterBang: Boolean) {
+        adapterBang(isAdapterBang)
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
         activity.window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
