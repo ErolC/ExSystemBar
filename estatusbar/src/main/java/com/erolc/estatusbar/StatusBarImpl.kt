@@ -16,7 +16,6 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.core.graphics.ColorUtils
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -27,7 +26,7 @@ import androidx.lifecycle.Observer
  * @author erolc 28/10/2020
  * 这是一个设置状态栏的实现类，用法很简单，唯一一个建议就是，在onResume回调中使用。
  * 由于整个app都是统一使用同一个statusBar，所以需要在每次回到当前界面就需要设置最新的状态栏样式，
- * 否者会由于在其他地方的脏样式数据污染了当前界面的样式，所以建议在onResume回调中使用，这样就可以保证了
+ * 否则会由于在其他地方的脏样式数据污染了当前界面的样式，所以建议在onResume回调中使用，这样就可以保证了
  *
  */
 
@@ -64,6 +63,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
 
     /**
      * 该背景解决显示系统状态栏的时候会出现白底的现象
+     * 以下四个方法都是
      */
     private fun initBg() {
         val view = View(activity)
@@ -90,6 +90,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         val view = activity.contentView.findViewWithTag<View>(STATUS_BAR_BG)
         view.setBackgroundColor(color)
     }
+
 
     /**
      * 得到内容部分view
@@ -170,7 +171,9 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
             }
         }
 
-
+    /**
+     * 页面内容是否入侵到状态栏
+     */
     private val Activity.statusBarImmersive
         get() = run {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -201,6 +204,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         contentView.setPadding(0, paddingTop, 0, 0)//设置内容的padding
     }
 
+
     private fun FragmentActivity.statusBarCurtain(
         alpha: Int = 0,
         red: Int = 255,
@@ -218,8 +222,14 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         return data
     }
 
+    /**
+     * StatusBar是否展示
+     */
     private val Activity.isShowStatusBar get() = window.attributes.flags and WindowManager.LayoutParams.FLAG_FULLSCREEN == 0
 
+    /**
+     * 清除自定义StatusBar
+     */
     private fun clearStatusBar() {
         findStatusBar()?.apply {
             background = null
@@ -237,9 +247,11 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         return findStatusBar() != null//根据tag查看自定义状态栏是否存在
     }
 
+
     override fun isShowStatusBar(): Boolean {
         return activity.isShowStatusBar
     }
+
 
     override fun textColorIsDark(): Boolean {
         return activity.statusBarTextColorIsDark
@@ -320,7 +332,6 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
             Color.TRANSPARENT
     }
 
-
     override fun getSysBackgroundColor(): Int {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             log("get statusBar color with System")
@@ -329,10 +340,6 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
             Color.TRANSPARENT
     }
 
-    /**
-     * 这里仍然存在疑问
-     * 在将字体颜色变为白色的时候，会有bug
-     */
     @TargetApi(Build.VERSION_CODES.M)
     override fun setTextColor(isDark: Boolean) {
         val systemUiVisibility = activity.window.decorView.systemUiVisibility

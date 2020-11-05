@@ -1,26 +1,47 @@
 package com.erolc.estatusbar
 
-import android.app.Activity
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 
 /**
- * 这个对象应该与fragment相关，fragment归属不同的StatusBar，
+ * 生命周期感知的StatusBar，该对象，每个activity和fragment都会有各自的一个，使得各个页面之间的设置都相互隔离，并且可以在页面销毁的时候，销毁相应的对象。
  *
- * 如何做到，设置的手动设置的样式，在回到页面还能恢复呢？
- * 只能将手动设置的参数进行保存，然后在回到界面的时候重新设置，这里要对这些保存的样式数据进行管理，该类的生命长度在fragmnet的生命长度。
- * 在原本的statusBar包裹一层FragmentStatusBar，作为中间层，用作保存fragment特有的样式，
+ * 注意：当在fragment+ViewPager模式下使用的时候，确保是新版本的fragment，['androidx.appcompat:appcompat:1.2.0']以上,如果[Fragment.setUserVisibleHint]已经废弃，则是新的fragment
+ * 否则会在切换页面的时候statusBar表现出不一样的效果。
  *
- * 由于各种设置之间都有牵绊，比如设置了背景色，那么如果原本有设置背景资源，那么背景资源就得失效
  */
-class FragmentStatusBar(activity: Activity, val statusBar: StatusBar) : StatusBar by statusBar {
+class LifeCycleStatusBar(
+    lifecycle: Lifecycle,
+    hashCode: Int,
+    private val statusBar: StatusBar
+    ) : StatusBar by statusBar {
+
     private var color: Int? = null
-    private var sysColor: Int? = activity.defStatusBarColor
+    private var sysColor: Int? = null
     private var drawableRes: Int? = null
+    private var curtainColor: Int? = null
     private var drawable: Drawable? = null
     private var textColor: Boolean? = null
     private var isHide: Int = 3
     private var immersive: Boolean = false
 
+
+    init {
+        lifecycle.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    restore()
+                } else if (event == Lifecycle.Event.ON_DESTROY) {
+                    StatusBarFactory.clear(hashCode)
+                }
+            }
+        })
+    }
 
     override fun setBackgroundColor(color: Int) {
         this.color = color
@@ -47,6 +68,12 @@ class FragmentStatusBar(activity: Activity, val statusBar: StatusBar) : StatusBa
         updateBgStyle(2)
         statusBar.setSysBackgroundColor(color)
     }
+
+//    override fun curtain(alpha: Int, red: Int, green: Int, blue: Int): MutableLiveData<Int> {
+//        curtainColor = Color.argb(alpha, red, green, blue)
+//
+//        return statusBar.curtain(alpha, red, green, blue)
+//    }
 
     override fun setTextColor(isDark: Boolean) {
         textColor = isDark
@@ -76,11 +103,14 @@ class FragmentStatusBar(activity: Activity, val statusBar: StatusBar) : StatusBa
         sysColor = if (type == 2) sysColor else null
         drawable = if (type == 3) drawable else null
         drawableRes = if (type == 4) drawableRes else null
-
+        curtainColor = if (type == 5) curtainColor else null
+        if (isHide == 0) {
+            isHide = 3
+        }
         immersive = false
     }
 
-    fun restore() {
+    private fun restore() {
         if (isHide == 3) {
             statusBar.show()
             color?.let { statusBar.setBackgroundColor(it) }

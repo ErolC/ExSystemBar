@@ -22,7 +22,6 @@ fun FragmentActivity.statusBar(body: StatusBar.() -> Unit): StatusBar {
                 statusBar.body()
             }
         }
-
     })
     return statusBar
 }
@@ -36,16 +35,6 @@ fun FragmentActivity.statusBar(body: StatusBar.() -> Unit): StatusBar {
 fun Fragment.statusBar(body: StatusBar.() -> Unit): StatusBar {
     val statusBar = getFragmentStatusBar()
     statusBar.body()
-    lifecycle.addObserver(object : LifecycleEventObserver {
-        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-            if (event == Lifecycle.Event.ON_RESUME) {
-                (statusBar as? FragmentStatusBar)?.restore()
-            } else if (event == Lifecycle.Event.ON_DESTROY) {
-                //如果设置了FragmentStatusBar，那么需要在这里将该对象从工厂中移除
-                StatusBarFactory.clear(this@statusBar)
-            }
-        }
-    })
     return statusBar
 }
 
@@ -54,29 +43,25 @@ fun Fragment.statusBar(body: StatusBar.() -> Unit): StatusBar {
  *
  *  使用方法和[statusBar]类似，不同的是，该方法会得到一个[StatusBarRestore]
  *  需要在[Fragment.setUserVisibleHint]回调中调用一下其invoke方法即可
- *  建议：将fragment版本升到['androidx.appcompat:appcompat:1.2.0']以上，以使用[statusBar]方法
+ *  建议：将fragment版本升到['androidx.appcompat:appcompat:1.2.0']以上，以使用[Fragment.statusBar]方法
  *
  *  该方法后面可能会废弃
  */
-fun Fragment.restoreStatusBar(body: StatusBar.() -> Unit): StatusBarRestore {
-    val statusBar = getFragmentStatusBar()
-    statusBar.body()
-    lifecycle.addObserver(object : LifecycleEventObserver {
-        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                //如果设置了FragmentStatusBar，那么需要在这里将该对象从工厂中移除
-                StatusBarFactory.clear(this@restoreStatusBar)
-            }
-        }
-    })
+fun Fragment.compatStatusBar(body: StatusBar.() -> Unit): StatusBarRestore {
+    val statusBar = getStatusBar()
     return {
-        (statusBar as? FragmentStatusBar)?.restore()
+        statusBar.body()
         statusBar
     }
 }
 
-fun Activity.getStatusBar(): StatusBar {
+internal fun FragmentActivity.getStatusBar(): StatusBar {
     return StatusBarFactory.create(this)
+}
+
+
+internal fun Fragment.getStatusBar(): StatusBar {
+    return StatusBarFactory.create(requireActivity())
 }
 
 internal fun Fragment.getFragmentStatusBar(): StatusBar {

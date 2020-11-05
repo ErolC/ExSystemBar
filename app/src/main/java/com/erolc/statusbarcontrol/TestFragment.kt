@@ -39,7 +39,7 @@ class TestFragment : Fragment() {
         statusBar = statusBar {
             when (index) {
                 0 -> {
-//                    setBackgroundColor(Color.BLUE)
+                    setBackgroundColor(Color.BLUE)
                     binding!!.desc.text = "状态栏是蓝色"
                 }
                 1 -> {
