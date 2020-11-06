@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.erolc.estatusbar.*
+import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.FragmentTestBinding
 
 class TestFragment : Fragment() {

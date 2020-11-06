@@ -1,11 +1,11 @@
-package com.erolc.estatusbar
+package com.erolc.exbar
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 
 /**
  * StatusBar的对象工厂
- *
+ * 管理StatusBar对象
  */
 internal class StatusBarFactory private constructor() {
     //以hashCode为key，保证唯一

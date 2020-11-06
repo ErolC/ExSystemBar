@@ -9,9 +9,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleObserver
-import com.erolc.estatusbar.StatusBar
-import com.erolc.estatusbar.statusBar
+import com.erolc.exbar.StatusBar
+import com.erolc.exbar.statusBar
 import com.erolc.statusbarcontrol.databinding.ActivityMainBinding
 
 /**

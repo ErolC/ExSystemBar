@@ -1,4 +1,4 @@
-package com.erolc.estatusbar
+package com.erolc.exbar
 
 import android.util.Log
 

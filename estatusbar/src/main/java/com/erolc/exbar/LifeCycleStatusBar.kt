@@ -1,4 +1,4 @@
-package com.erolc.estatusbar
+package com.erolc.exbar
 
 import android.graphics.drawable.Drawable
 import androidx.fragment.app.Fragment
@@ -28,7 +28,6 @@ internal class LifeCycleStatusBar(
     private var immersive: Boolean = false
 
     private val exeStatusBar = if(statusBar is LifeCycleStatusBar) statusBar.statusBar else statusBar
-
 
     init {
         lifecycle.addObserver(object : LifecycleEventObserver {
@@ -68,12 +67,6 @@ internal class LifeCycleStatusBar(
         exeStatusBar.setSysBackgroundColor(color)
     }
 
-//    override fun curtain(alpha: Int, red: Int, green: Int, blue: Int): MutableLiveData<Int> {
-//        curtainColor = Color.argb(alpha, red, green, blue)
-//
-//        return exeStatusBar.curtain(alpha, red, green, blue)
-//    }
-
     override fun setTextColor(isDark: Boolean) {
         textColor = isDark
         exeStatusBar.setTextColor(isDark)
@@ -97,6 +90,9 @@ internal class LifeCycleStatusBar(
         exeStatusBar.immersive()
     }
 
+    /**
+     * 更新背景资源，除了刚设置的资源，其他的都需要清除
+     */
     private fun updateBgStyle(type: Int) {
         color = if (type == 1) color else null
         sysColor = if (type == 2) sysColor else null
@@ -109,6 +105,9 @@ internal class LifeCycleStatusBar(
         immersive = false
     }
 
+    /**
+     * 对资源进行恢复
+     */
     private fun restore() {
         if (isHide == 3) {
             exeStatusBar.show()

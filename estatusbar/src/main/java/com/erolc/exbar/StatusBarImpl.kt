@@ -1,4 +1,4 @@
-package com.erolc.estatusbar
+package com.erolc.exbar
 
 
 import android.annotation.TargetApi
@@ -24,9 +24,7 @@ import androidx.lifecycle.Observer
 /**
  *
  * @author erolc 28/10/2020
- * 这是一个设置状态栏的实现类，用法很简单，唯一一个建议就是，在onResume回调中使用。
- * 由于整个app都是统一使用同一个statusBar，所以需要在每次回到当前界面就需要设置最新的状态栏样式，
- * 否则会由于在其他地方的脏样式数据污染了当前界面的样式，所以建议在onResume回调中使用，这样就可以保证了
+ * 这是一个设置状态栏的实现类
  *
  */
 

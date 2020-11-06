@@ -1,7 +1,5 @@
-package com.erolc.estatusbar
+package com.erolc.exbar
 
-import android.app.Activity
-import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
