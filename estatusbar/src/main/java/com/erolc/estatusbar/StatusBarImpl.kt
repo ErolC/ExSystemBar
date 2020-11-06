@@ -61,6 +61,14 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         }
     }
 
+    internal val Activity.defStatusBarColor: Int
+        get() =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                resources.getColor(R.color.colorPrimaryDark, theme)
+            else
+                resources.getColor(R.color.colorPrimaryDark)
+
+
     /**
      * 该背景解决显示系统状态栏的时候会出现白底的现象
      * 以下四个方法都是

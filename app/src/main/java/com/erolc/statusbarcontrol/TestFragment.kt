@@ -15,7 +15,6 @@ class TestFragment : Fragment() {
     private lateinit var statusBar: StatusBar
     private var index = 0
     private var binding: FragmentTestBinding? = null
-    private lateinit var defStatusBar: StatusBarRestore
 
     companion object {
         fun newInstance(index: Int): TestFragment {

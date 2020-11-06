@@ -1,6 +1,5 @@
 package com.erolc.estatusbar
 
-import android.app.Activity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 
@@ -11,23 +10,9 @@ import androidx.fragment.app.FragmentActivity
 internal class StatusBarFactory private constructor() {
     //以hashCode为key，保证唯一
     private val map: MutableMap<Int, StatusBar> = mutableMapOf()
-    private val MAIN_STATUS_BAR_KEY = "mainStatusBarKey".hashCode()
 
     companion object {
         private val factory: StatusBarFactory by lazy { StatusBarFactory() }
-
-        /**
-         * 创建一个唯一的处理状态栏的对象。
-         */
-        private fun createMainStatusBar(activity: Activity): StatusBar {
-            var statusBar = factory.map[factory.MAIN_STATUS_BAR_KEY]
-            if (statusBar == null) {
-                statusBar = StatusBarImpl(activity)
-                factory.map[factory.MAIN_STATUS_BAR_KEY] = statusBar
-
-            }
-            return statusBar
-        }
 
         /**
          * 创建一个生命周期感知的statusBar副本对象
@@ -37,10 +22,10 @@ internal class StatusBarFactory private constructor() {
             val key = activity.hashCode()
             var statusBar = factory.map[key]
             if (statusBar == null) {
-                val createMainStatusBar = createMainStatusBar(activity)
-                synchronized(createMainStatusBar) {
+                val realStatusBar = StatusBarImpl(activity)
+                synchronized(realStatusBar) {
                     statusBar =
-                        LifeCycleStatusBar(activity.lifecycle, key, createMainStatusBar)
+                        LifeCycleStatusBar(activity.lifecycle, realStatusBar)
                     factory.map[key] = statusBar!!
                 }
             }
@@ -56,10 +41,10 @@ internal class StatusBarFactory private constructor() {
             var statusBar = factory.map[key]
             if (statusBar == null) {
                 //如果这里获取不到activity，那么证明当前的fragment不适合操作statusbar
-                val createMainStatusBar = createMainStatusBar(fragment.requireActivity())
-                synchronized(createMainStatusBar) {
+                val activityStatusBar = create(fragment.requireActivity())
+                synchronized(activityStatusBar) {
                     statusBar =
-                        LifeCycleStatusBar(fragment.lifecycle, key, createMainStatusBar)
+                        LifeCycleStatusBar(fragment.lifecycle, activityStatusBar)
                     factory.map[key] = statusBar!!
                 }
 

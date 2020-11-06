@@ -1,12 +1,10 @@
 package com.erolc.estatusbar
 
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
 
 /**
  * 生命周期感知的StatusBar，该对象，每个activity和fragment都会有各自的一个，使得各个页面之间的设置都相互隔离，并且可以在页面销毁的时候，销毁相应的对象。
@@ -15,10 +13,9 @@ import androidx.lifecycle.MutableLiveData
  * 否则会在切换页面的时候statusBar表现出不一样的效果。
  *
  */
-class LifeCycleStatusBar(
+internal class LifeCycleStatusBar(
     lifecycle: Lifecycle,
-    hashCode: Int,
-    private val statusBar: StatusBar
+    val statusBar: StatusBar
     ) : StatusBar by statusBar {
 
     private var color: Int? = null
@@ -30,6 +27,8 @@ class LifeCycleStatusBar(
     private var isHide: Int = 3
     private var immersive: Boolean = false
 
+    private val exeStatusBar = if(statusBar is LifeCycleStatusBar) statusBar.statusBar else statusBar
+
 
     init {
         lifecycle.addObserver(object : LifecycleEventObserver {
@@ -37,7 +36,7 @@ class LifeCycleStatusBar(
                 if (event == Lifecycle.Event.ON_RESUME) {
                     restore()
                 } else if (event == Lifecycle.Event.ON_DESTROY) {
-                    StatusBarFactory.clear(hashCode)
+                    StatusBarFactory.clear(source.hashCode())
                 }
             }
         })
@@ -46,56 +45,56 @@ class LifeCycleStatusBar(
     override fun setBackgroundColor(color: Int) {
         this.color = color
         updateBgStyle(1)
-        statusBar.setBackgroundColor(color)
+        exeStatusBar.setBackgroundColor(color)
     }
 
     override fun setBackground(drawable: Int) {
         drawableRes = drawable
         updateBgStyle(4)
 
-        statusBar.setBackground(drawable)
+        exeStatusBar.setBackground(drawable)
     }
 
     override fun setBackground(drawable: Drawable) {
         this.drawable = drawable
         updateBgStyle(3)
-        statusBar.setBackground(drawable)
+        exeStatusBar.setBackground(drawable)
     }
 
 
     override fun setSysBackgroundColor(color: Int) {
         sysColor = color
         updateBgStyle(2)
-        statusBar.setSysBackgroundColor(color)
+        exeStatusBar.setSysBackgroundColor(color)
     }
 
 //    override fun curtain(alpha: Int, red: Int, green: Int, blue: Int): MutableLiveData<Int> {
 //        curtainColor = Color.argb(alpha, red, green, blue)
 //
-//        return statusBar.curtain(alpha, red, green, blue)
+//        return exeStatusBar.curtain(alpha, red, green, blue)
 //    }
 
     override fun setTextColor(isDark: Boolean) {
         textColor = isDark
-        statusBar.setTextColor(isDark)
+        exeStatusBar.setTextColor(isDark)
     }
 
     override fun hide(isAdapterBang: Boolean) {
         isHide = if (isAdapterBang) 1 else 2
         immersive = false
-        statusBar.hide(isAdapterBang)
+        exeStatusBar.hide(isAdapterBang)
     }
 
     override fun show() {
         isHide = 3
         immersive = false
-        statusBar.show()
+        exeStatusBar.show()
     }
 
     override fun immersive() {
         immersive = true
         isHide = 0
-        statusBar.immersive()
+        exeStatusBar.immersive()
     }
 
     private fun updateBgStyle(type: Int) {
@@ -112,19 +111,19 @@ class LifeCycleStatusBar(
 
     private fun restore() {
         if (isHide == 3) {
-            statusBar.show()
-            color?.let { statusBar.setBackgroundColor(it) }
-            sysColor?.let { statusBar.setSysBackgroundColor(it) }
-            drawableRes?.let { statusBar.setBackground(it) }
-            drawable?.let { statusBar.setBackground(it) }
-            textColor?.let { statusBar.setTextColor(it) }
+            exeStatusBar.show()
+            color?.let { exeStatusBar.setBackgroundColor(it) }
+            sysColor?.let { exeStatusBar.setSysBackgroundColor(it) }
+            drawableRes?.let { exeStatusBar.setBackground(it) }
+            drawable?.let { exeStatusBar.setBackground(it) }
+            textColor?.let { exeStatusBar.setTextColor(it) }
         } else if (!immersive) {
-            statusBar.hide(isHide == 1)
+            exeStatusBar.hide(isHide == 1)
         }
 
         if (immersive) {
-            statusBar.immersive()
-            textColor?.let { statusBar.setTextColor(it) }
+            exeStatusBar.immersive()
+            textColor?.let { exeStatusBar.setTextColor(it) }
         }
     }
 
