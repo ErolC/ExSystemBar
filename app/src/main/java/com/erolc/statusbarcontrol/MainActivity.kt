@@ -9,7 +9,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.erolc.exbar.ExStatusBar
 import com.erolc.exbar.StatusBar
+import com.erolc.exbar.getStatusBar
 import com.erolc.exbar.statusBar
 import com.erolc.statusbarcontrol.databinding.ActivityMainBinding
 
@@ -29,8 +31,10 @@ class MainActivity : AppCompatActivity() {
 //        val exStatusBar:StatusBar = ExStatusBar(this)
 //        或者
         statusBar = statusBar {
+
         }
 
+        val statusbar:StatusBar = ExStatusBar.create(this)
 
     }
 
