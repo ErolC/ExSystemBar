@@ -394,7 +394,8 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             log("get statusBar color with System")
             activity.window.statusBarColor = Color.TRANSPARENT
-        } else
-            Color.TRANSPARENT
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            activity.window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        }
     }
 }
