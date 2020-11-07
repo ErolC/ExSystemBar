@@ -42,15 +42,8 @@ interface StatusBar {
      */
     fun getBackground():Drawable?
 
-    /**
-     * 设置系统状态栏的背景颜色
-     */
-    fun setSysBackgroundColor(color:Int)
 
-    /**
-     * 获取系统状态栏的背景色
-     */
-    fun getSysBackgroundColor():Int
+
 
     /**
      * 设置状态栏文字是否是暗系

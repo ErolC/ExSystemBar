@@ -16,10 +16,9 @@ import androidx.lifecycle.LifecycleOwner
 internal class LifeCycleStatusBar(
     lifecycle: Lifecycle,
     val statusBar: StatusBar
-    ) : StatusBar by statusBar {
+) : StatusBar by statusBar {
 
     private var color: Int? = null
-    private var sysColor: Int? = null
     private var drawableRes: Int? = null
     private var curtainColor: Int? = null
     private var drawable: Drawable? = null
@@ -27,7 +26,8 @@ internal class LifeCycleStatusBar(
     private var isHide: Int = 3
     private var immersive: Boolean = false
 
-    private val exeStatusBar = if(statusBar is LifeCycleStatusBar) statusBar.statusBar else statusBar
+    private val exeStatusBar =
+        if (statusBar is LifeCycleStatusBar) statusBar.statusBar else statusBar
 
     init {
         lifecycle.addObserver(object : LifecycleEventObserver {
@@ -61,12 +61,6 @@ internal class LifeCycleStatusBar(
     }
 
 
-    override fun setSysBackgroundColor(color: Int) {
-        sysColor = color
-        updateBgStyle(2)
-        exeStatusBar.setSysBackgroundColor(color)
-    }
-
     override fun setTextColor(isDark: Boolean) {
         textColor = isDark
         exeStatusBar.setTextColor(isDark)
@@ -95,7 +89,6 @@ internal class LifeCycleStatusBar(
      */
     private fun updateBgStyle(type: Int) {
         color = if (type == 1) color else null
-        sysColor = if (type == 2) sysColor else null
         drawable = if (type == 3) drawable else null
         drawableRes = if (type == 4) drawableRes else null
         curtainColor = if (type == 5) curtainColor else null
@@ -112,7 +105,6 @@ internal class LifeCycleStatusBar(
         if (isHide == 3) {
             exeStatusBar.show()
             color?.let { exeStatusBar.setBackgroundColor(it) }
-            sysColor?.let { exeStatusBar.setSysBackgroundColor(it) }
             drawableRes?.let { exeStatusBar.setBackground(it) }
             drawable?.let { exeStatusBar.setBackground(it) }
             textColor?.let { exeStatusBar.setTextColor(it) }

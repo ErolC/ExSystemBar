@@ -1,7 +1,6 @@
 package com.erolc.exbar
 
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -307,9 +306,19 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
     }
 
     override fun setBackgroundColor(color: Int) {
-        activity.getStatusBarView().setBackgroundColor(color)
-        val lightColor = isLightColor(color)
-        setTextColor(lightColor)//设置自定义状态栏的字体颜色
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            log("get statusBar color with System")
+            statusBgColor(color)
+            activity.window.statusBarColor = color //系统状态栏的背景颜色
+            val lightColor = isLightColor(color)
+            setTextColor(lightColor)//设置自定义状态栏的字体颜色
+            clearStatusBar()
+            activity.updateLayout()
+        } else {
+            activity.getStatusBarView().setBackgroundColor(color)
+            val lightColor = isLightColor(color)
+            setTextColor(lightColor)//设置自定义状态栏的字体颜色
+        }
     }
 
     override fun setBackground(drawable: Int) {
@@ -325,40 +334,20 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         return findStatusBar()?.background
     }
 
-    override fun setSysBackgroundColor(color: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            log("get statusBar color with System")
-            statusBgColor(color)
-            activity.window.statusBarColor = color //系统状态栏的背景颜色
-            val lightColor = isLightColor(color)
-            setTextColor(lightColor)//设置自定义状态栏的字体颜色
-            clearStatusBar()
-            activity.updateLayout()
-        } else
-            Color.TRANSPARENT
-    }
-
-    override fun getSysBackgroundColor(): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            log("get statusBar color with System")
-            activity.window.statusBarColor //系统状态栏的背景颜色
-        } else
-            Color.TRANSPARENT
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
     override fun setTextColor(isDark: Boolean) {
-        val systemUiVisibility = activity.window.decorView.systemUiVisibility
-        var option =
-            if (isDark) SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else SYSTEM_UI_FLAG_VISIBLE
-        option = if (option == SYSTEM_UI_FLAG_VISIBLE) {
-            if (activity.statusBarImmersive) {
-                option or (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
-            } else option
-        } else {
-            option or systemUiVisibility
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val systemUiVisibility = activity.window.decorView.systemUiVisibility
+            var option =
+                if (isDark) SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else SYSTEM_UI_FLAG_VISIBLE
+            option = if (option == SYSTEM_UI_FLAG_VISIBLE) {
+                if (activity.statusBarImmersive) {
+                    option or (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
+                } else option
+            } else {
+                option or systemUiVisibility
+            }
+            activity.window.decorView.systemUiVisibility = option
         }
-        activity.window.decorView.systemUiVisibility = option
     }
 
     override fun hide(isAdapterBang: Boolean) {

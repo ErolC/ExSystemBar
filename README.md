@@ -5,18 +5,18 @@
 在build.gradle文件中加入
 ```gradle
 allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
-	}
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
 
 ```
 在app.gradle文件加入
 ```gradle
 dependencies {
-	        implementation 'com.github.ErolC:StatusBarControl:1.1.0'
-	}
+ implementation 'com.github.ErolC:StatusBarControl:1.1.2'
+}
 ```
 ### API
 ```
@@ -25,8 +25,6 @@ dependencies {
     setBackgroundColor //设置背景色
     setBackground       //设置背景，可以是drawable，也可以是drawable的资源id
     getBackground   //获取背景，是drawable
-    setSysBackgroundColor //设置系统的背景色，和setBackgroundColor在表面上没区别
-    getSysBackgroundColor //获取系统的背景色
     setTextColor    //设置字体颜色，只有两种，亮系和暗系
     hide        //隐藏状态栏，在状态栏位置下滑可临时呼出状态栏，一段时间后会自动收起
     show        //展示状态栏，和上面是一对
@@ -56,4 +54,4 @@ val statusBarr:StatusBar = getStatusBar()
 `windowDrawsSystemBarBackgrounds`这个属性为false时会让状态栏背景设置失效(这个名字就很明显了)。背景会被黑色霸占，所以无法任何的背景设置，但是其他操作还是可以的。
 
 ## 最后
-如果使用有什么问题或者建议，请务必要在issues上留下您的问题或想法，这将对我非常有帮助
+如果使用有什么问题或者建议，请务必要在issues上留下您的问题或想法，这将对我非常有帮助，如果觉得满意，希望能给个star。谢谢
