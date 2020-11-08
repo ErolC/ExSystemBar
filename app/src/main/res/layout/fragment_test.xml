@@ -78,20 +78,12 @@
                 app:layout_constraintBottom_toTopOf="@id/drawableBg" />
 
         <Button
-                android:id="@+id/sysBg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="@{clickHandler::showSysBg}"
-                android:text="设置系统背景色"
-                app:layout_constraintBottom_toTopOf="@id/theHeight" />
-
-        <Button
                 android:id="@+id/switchTextColor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="@{clickHandler::switchTextColor}"
                 android:text="切换文字颜色"
-                app:layout_constraintBottom_toTopOf="@id/sysBg" />
+                app:layout_constraintBottom_toTopOf="@id/theHeight" />
 
         <Button
                 android:id="@+id/imm"

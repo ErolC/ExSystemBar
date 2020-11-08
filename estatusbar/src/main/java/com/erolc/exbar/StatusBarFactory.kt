@@ -52,6 +52,10 @@ internal class StatusBarFactory private constructor() {
             return statusBar!!
         }
 
+        fun findFragmentWithMap(fragment: Fragment): LifeCycleStatusBar? {
+            return factory.map[fragment.hashCode()] as? LifeCycleStatusBar
+        }
+
         /**
          * 清除特定的状态栏对象
          */

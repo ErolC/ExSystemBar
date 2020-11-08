@@ -63,23 +63,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-        <Button
-                android:id="@+id/sysBg"
-                android:onClick="showSysBg"
-                app:layout_constraintBottom_toTopOf="@id/theHeight"
-                android:text="设置系统背景色"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
         <Button
                 android:id="@+id/switchTextColor"
                 android:onClick="switchTextColor"
-                app:layout_constraintBottom_toTopOf="@id/sysBg"
+                app:layout_constraintBottom_toTopOf="@id/theHeight"
                 android:text="切换文字颜色"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         <Button
+                android:id="@+id/immersive"
                 android:onClick="immersive"
                 app:layout_constraintBottom_toTopOf="@id/switchTextColor"
                 android:text="入侵状态栏"
@@ -88,7 +82,7 @@
 
         <Button
                 android:onClick="next"
-                app:layout_constraintBottom_toTopOf="@id/switchTextColor"
+                app:layout_constraintBottom_toTopOf="@id/immersive"
                 android:text="下一页更精彩"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

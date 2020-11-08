@@ -63,10 +63,6 @@ class MainActivity : AppCompatActivity() {
         showToast(statusBar.getHeight())
     }
 
-    fun showSysBg(view: View) {
-        statusBar.setSysBackgroundColor(Color.GRAY)
-    }
-
     fun switchTextColor(view: View) {
         val textColorIsDark = statusBar.textColorIsDark()
         Log.e("TAG", "switchTextColor: $textColorIsDark")

@@ -1,7 +1,9 @@
 package com.erolc.exbar
 
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -25,6 +27,7 @@ internal class LifeCycleStatusBar(
     private var textColor: Boolean? = null
     private var isHide: Int = 3
     private var immersive: Boolean = false
+    private var isSetUserVisibleHint: Boolean? = null
 
     private val exeStatusBar =
         if (statusBar is LifeCycleStatusBar) statusBar.statusBar else statusBar
@@ -33,7 +36,9 @@ internal class LifeCycleStatusBar(
         lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                 if (event == Lifecycle.Event.ON_RESUME) {
-                    restore()
+                    if (source is Fragment && source.userVisibleHint || source is FragmentActivity) {
+                        restore()
+                    }
                 } else if (event == Lifecycle.Event.ON_DESTROY) {
                     StatusBarFactory.clear(source.hashCode())
                 }
@@ -41,47 +46,68 @@ internal class LifeCycleStatusBar(
         })
     }
 
+
+    private fun canSet(body: () -> Unit) {
+        if (isSetUserVisibleHint == null || isSetUserVisibleHint!!) {
+            body()
+        }
+    }
+
     override fun setBackgroundColor(color: Int) {
         this.color = color
         updateBgStyle(1)
-        exeStatusBar.setBackgroundColor(color)
+        canSet {
+            exeStatusBar.setBackgroundColor(color)
+        }
     }
+
 
     override fun setBackground(drawable: Int) {
         drawableRes = drawable
         updateBgStyle(4)
-
-        exeStatusBar.setBackground(drawable)
+        canSet {
+            exeStatusBar.setBackground(drawable)
+        }
     }
 
     override fun setBackground(drawable: Drawable) {
         this.drawable = drawable
         updateBgStyle(3)
-        exeStatusBar.setBackground(drawable)
+        canSet {
+            exeStatusBar.setBackground(drawable)
+        }
     }
 
 
     override fun setTextColor(isDark: Boolean) {
         textColor = isDark
-        exeStatusBar.setTextColor(isDark)
+        canSet {
+            exeStatusBar.setTextColor(isDark)
+        }
     }
 
     override fun hide(isAdapterBang: Boolean) {
         isHide = if (isAdapterBang) 1 else 2
         immersive = false
-        exeStatusBar.hide(isAdapterBang)
+        canSet {
+            exeStatusBar.hide(isAdapterBang)
+        }
     }
 
     override fun show() {
         isHide = 3
         immersive = false
-        exeStatusBar.show()
+        canSet {
+            exeStatusBar.show()
+        }
     }
 
     override fun immersive() {
         immersive = true
         isHide = 0
-        exeStatusBar.immersive()
+        canSet {
+            exeStatusBar.immersive()
+        }
     }
 
     /**
@@ -104,6 +130,7 @@ internal class LifeCycleStatusBar(
     private fun restore() {
         if (isHide == 3) {
             exeStatusBar.show()
+            Log.e("TAG", "restore: $color")
             color?.let { exeStatusBar.setBackgroundColor(it) }
             drawableRes?.let { exeStatusBar.setBackground(it) }
             drawable?.let { exeStatusBar.setBackground(it) }
@@ -115,6 +142,13 @@ internal class LifeCycleStatusBar(
         if (immersive) {
             exeStatusBar.immersive()
             textColor?.let { exeStatusBar.setTextColor(it) }
+        }
+    }
+
+    fun setUserVisibleHint(visibleHint: Boolean) {
+        isSetUserVisibleHint = visibleHint
+        if (visibleHint) {
+            restore()
         }
     }
 

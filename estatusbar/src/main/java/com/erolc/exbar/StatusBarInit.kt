@@ -7,7 +7,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 
 
-
 /**
  * 使用这种方式，可以在任何地方使用，因为内部保证了都是会在onResume回调中调用
  */
@@ -30,7 +29,13 @@ fun Fragment.statusBar(body: StatusBar.() -> Unit): StatusBar {
 }
 
 
+fun Fragment.setUserVisibleHint() {
+    ExStatusBar.setUserVisibleHint(this)
+}
 
+
+
+@Deprecated("")
 typealias StatusBarRestore = () -> StatusBar
 
 /**
@@ -42,6 +47,7 @@ typealias StatusBarRestore = () -> StatusBar
  *
  *  该方法后面可能会废弃
  */
+@Deprecated("")
 fun Fragment.compatStatusBar(body: StatusBar.() -> Unit): StatusBarRestore {
     val statusBar = getCompatStatusBar()
     return {

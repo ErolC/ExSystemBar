@@ -1,5 +1,6 @@
 package com.erolc.statusbarcontrol
 
+import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -32,6 +33,7 @@ class TestFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.e("TAG", "onCreateView: " )
         index = arguments?.getInt("index") ?: 0
         binding = FragmentTestBinding.inflate(inflater, container, false)
         binding!!.clickHandler = ClickHandler()
@@ -39,14 +41,17 @@ class TestFragment : Fragment() {
             when (index) {
                 0 -> {
                     setBackgroundColor(Color.BLUE)
+                    Log.e("TAG", "onCreateView: color:蓝色 int:${Color.BLACK}" )
                     binding!!.desc.text = "状态栏是蓝色"
                 }
                 1 -> {
                     setBackgroundColor(Color.RED)
+                    Log.e("TAG", "onCreateView: color:红色 int:${Color.RED}" )
                     binding!!.desc.text = "状态栏是红色"
                 }
                 else -> {
                     setBackgroundColor(Color.YELLOW)
+                    Log.e("TAG", "onCreateView: color:黄色 int:${Color.YELLOW}" )
                     binding!!.desc.text = "状态栏是黄色"
                 }
             }
@@ -54,6 +59,7 @@ class TestFragment : Fragment() {
 
         return binding!!.root
     }
+
 
     inner class ClickHandler {
         fun hide(view: View) {
@@ -73,9 +79,6 @@ class TestFragment : Fragment() {
             showToast(statusBar.getHeight())
         }
 
-        fun showSysBg(view: View) {
-            statusBar.setSysBackgroundColor(Color.GRAY)
-        }
 
         fun randomColor(view: View) {
             statusBar.setBackgroundColor(randomColor())
