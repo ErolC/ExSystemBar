@@ -1,7 +1,6 @@
 package com.erolc.statusbarcontrol
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -13,20 +12,20 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.fragment.findNavController
 import com.erolc.exbar.*
+import com.erolc.statusbarcontrol.databinding.FragmentTest1Binding
 import com.erolc.statusbarcontrol.databinding.FragmentTestBinding
 
-class TestFragment : Fragment() {
+class TestFragment1 : Fragment() {
     private lateinit var statusBar: StatusBar
     private var index = 0
-    private var binding: FragmentTestBinding? = null
+    private var binding: FragmentTest1Binding? = null
 
     companion object {
-        fun newInstance(index: Int): TestFragment {
+        fun newInstance(index: Int): TestFragment1 {
             val args = Bundle()
 
-            val fragment = TestFragment()
+            val fragment = TestFragment1()
             args.putInt("index", index)
             fragment.arguments = args
             return fragment
@@ -40,35 +39,19 @@ class TestFragment : Fragment() {
     ): View? {
         Log.e("TAG", "onCreateView: ")
         index = arguments?.getInt("index") ?: 0
-        binding = FragmentTestBinding.inflate(inflater, container, false)
+        binding = FragmentTest1Binding.inflate(inflater, container, false)
         binding!!.clickHandler = ClickHandler()
 
         lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                Log.e("TAG", "onStateChanged:test$index  " + event.name)
+                Log.e("TAG", "onStateChanged: " + event.name)
             }
 
         })
-
         statusBar = statusBar {
-            setBackgroundColor(Color.BLACK)
-            binding!!.desc.text = "状态栏是黑色"
-            when (index) {
-                0 -> {
-                    setBackgroundColor(Color.BLUE)
-                    binding!!.desc.text = "状态栏是蓝色"
-                }
-                1 -> {
-                    setBackgroundColor(Color.RED)
-                    binding!!.desc.text = "状态栏是红色"
-                }
-                else -> {
-                    setBackgroundColor(Color.YELLOW)
-                    binding!!.desc.text = "状态栏是黄色"
-                }
-            }
+//            setBackgroundColor(Color.GRAY)
+//            binding!!.desc.text = "状态栏是灰色"
         }
-
 
         return binding!!.root
     }
@@ -88,11 +71,10 @@ class TestFragment : Fragment() {
         }
 
         fun next(view: View) {
-//            val requireActivity = requireActivity()
-//            if (requireActivity is NavTestActivity) {
-//                requireActivity.next(++index)
-//            }
-            findNavController().navigate(R.id.action_testFragment_to_testFragment1)
+            val requireActivity = requireActivity()
+            if (requireActivity is NavTestActivity) {
+                requireActivity.next(++index)
+            }
         }
 
         fun showWithDrawable(view: View) {
@@ -125,9 +107,4 @@ class TestFragment : Fragment() {
             return Color.rgb(r.toInt(), g.toInt(), b.toInt())
         }
     }
-}
-
-
-fun <T> Fragment.showToast(t: T) {
-    Toast.makeText(requireContext(), "$t", Toast.LENGTH_SHORT).show()
 }

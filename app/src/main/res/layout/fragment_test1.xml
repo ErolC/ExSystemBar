@@ -6,13 +6,13 @@
     <data>
         <variable
                 name="clickHandler"
-                type="com.erolc.statusbarcontrol.TestFragment.ClickHandler" />
+                type="com.erolc.statusbarcontrol.TestFragment1.ClickHandler" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#257CFD"
+            android:background="#FD258A"
             tools:context=".MainActivity">
 
         <TextView

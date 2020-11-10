@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun next(view: View) {
-        val intent = Intent(this, TestActivity::class.java)
+        val intent = Intent(this, NavTestActivity::class.java)
         startActivity(intent)
     }
 

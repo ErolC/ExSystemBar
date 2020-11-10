@@ -15,7 +15,7 @@ allprojects {
 在app.gradle文件加入
 ```gradle
 dependencies {
- implementation 'com.github.ErolC:StatusBarControl:1.1.2'
+ implementation 'com.github.ErolC:ExStatusBar:1.1.3'
 }
 ```
 ### API
