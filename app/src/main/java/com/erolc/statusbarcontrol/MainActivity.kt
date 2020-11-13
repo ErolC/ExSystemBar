@@ -7,13 +7,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.erolc.exbar.ExStatusBar
-import com.erolc.exbar.StatusBar
-import com.erolc.exbar.getStatusBar
-import com.erolc.exbar.statusBar
+import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.ActivityMainBinding
+import kotlin.reflect.KProperty
 
 /**
  *  demo 在一个activity使用多个fragment，然后让每个fragment的状态栏都不一样，然后还有是一个次级activity
@@ -30,11 +29,9 @@ class MainActivity : AppCompatActivity() {
 //        或者
 //        val exStatusBar:StatusBar = ExStatusBar(this)
 //        或者
-        statusBar = statusBar {
 
-        }
 
-        val statusbar:StatusBar = ExStatusBar.create(this)
+        statusBar = ExStatusBar.create(this)
 
     }
 
@@ -64,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun switchTextColor(view: View) {
-        val textColorIsDark = statusBar.textColorIsDark()
+        val textColorIsDark = statusBar.isDark()
         Log.e("TAG", "switchTextColor: $textColorIsDark")
         statusBar.setTextColor(!textColorIsDark)
     }

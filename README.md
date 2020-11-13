@@ -1,4 +1,4 @@
-## StatusBarControl
+## ExStatusBar
 这是对状态栏的各种操作进行封装之后的库，可以让你快速简单的操作状态栏。
 
 ### 加入
@@ -29,21 +29,23 @@ dependencies {
     hide        //隐藏状态栏，在状态栏位置下滑可临时呼出状态栏，一段时间后会自动收起
     show        //展示状态栏，和上面是一对
     immersive   //所谓的"沉浸式"，我更喜欢称之为"侵入式"
-    isShowStatusBar //状态栏是否展示
-    textColorIsDark //字体颜色是否是暗系
+    isShow //状态栏是否展示
+    isDark //字体颜色是否是暗系
 ```
 ### 使用
 可通过`ExStatusBar`创建一个StatusBar
 ```
 //方式一
-val statusBar:StatusBar = ExStatusBar.create(this)
+val statusBar = ExStatusBar.create(this)
 //方式二
  val statusBar = statusBar {
          //可以将设置状态栏的操作都放在这里
      }
 //方式三
-val statusBarr:StatusBar = getStatusBar()
+val statusBarr = getStatusBar()
 ```
+#### 两种懒加载使用场景
+目前对于Fragment+viewpager，懒加载的方式有两种，对于setUserVisibleHint的懒加载方式，只需要在这个回调中调用setUserVisibleHint()/ExStatusBar.setUserVisibleHint(this)方法就可以了。
 
 ## 注意
 ```xml

@@ -80,11 +80,11 @@ interface StatusBar {
     /**
      * 状态栏是否展示
      */
-    fun isShowStatusBar():Boolean
+    fun isShow():Boolean
 
     /**
      * 状态栏字体颜色是否是暗系
      */
-    fun textColorIsDark():Boolean
+    fun isDark():Boolean
 
 }

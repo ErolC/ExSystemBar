@@ -253,12 +253,12 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
     }
 
 
-    override fun isShowStatusBar(): Boolean {
+    override fun isShow(): Boolean {
         return activity.isShowStatusBar
     }
 
 
-    override fun textColorIsDark(): Boolean {
+    override fun isDark(): Boolean {
         return activity.statusBarTextColorIsDark
     }
 

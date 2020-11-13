@@ -1,7 +1,5 @@
 package com.erolc.statusbarcontrol
 
-import android.app.Activity
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -78,6 +76,11 @@ class TestFragment : Fragment() {
         Log.e("TAG", "onResume: ")
     }
 
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        setUserVisibleHint()
+    }
+
     inner class ClickHandler {
         fun hide(view: View) {
             statusBar.hide()
@@ -109,7 +112,7 @@ class TestFragment : Fragment() {
         }
 
         fun switchTextColor(view: View) {
-            val textColorIsDark = statusBar.textColorIsDark()
+            val textColorIsDark = statusBar.isDark()
             Log.e("TAG", "switchTextColor: $textColorIsDark")
             statusBar.setTextColor(!textColorIsDark)
         }
