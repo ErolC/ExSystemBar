@@ -17,10 +17,10 @@ class NavTestActivity : AppCompatActivity() {
     }
 
     fun next(index:Int){
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, TestFragment.newInstance(index))
-            .addToBackStack("index$index")
-            .commit()
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.layout, TestFragment.newInstance(index))
+//            .addToBackStack("index$index")
+//            .commit()
     }
 
 

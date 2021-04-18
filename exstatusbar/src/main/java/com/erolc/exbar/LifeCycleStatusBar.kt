@@ -1,5 +1,8 @@
 package com.erolc.exbar
 
+import android.content.Context
+import android.content.res.Configuration
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -16,8 +19,8 @@ import androidx.lifecycle.LifecycleOwner
  *
  */
 internal class LifeCycleStatusBar(
-    lifecycle: Lifecycle,
-    val statusBar: StatusBar
+    owner: LifecycleOwner,
+    private val statusBar: StatusBar
 ) : StatusBar by statusBar {
 
     private var color: Int? = null
@@ -28,17 +31,35 @@ internal class LifeCycleStatusBar(
     private var isHide: Int = 3
     private var immersive: Boolean = false
     private var isSetUserVisibleHint: Boolean? = null
+    private val code = owner.hashCode()
+    val simpleName = owner.javaClass.simpleName
+    private var darkColor:Int? = null
 
+    //创建fragment的StatusBar是需要他所依附的activity的StatusBar
     private val exeStatusBar =
         if (statusBar is LifeCycleStatusBar) statusBar.statusBar else statusBar
 
     init {
-        lifecycle.addObserver(object : LifecycleEventObserver {
+        owner.lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                 if (event == Lifecycle.Event.ON_RESUME) {
-                    if (source is Fragment && source.userVisibleHint || source is FragmentActivity) {
-                        restore()
-                    }
+                    loge("$simpleName == $code")
+//                    if (source is Fragment && source.userVisibleHint || source is FragmentActivity) {
+                    restore()
+//                    }
+
+//                    if (isDark(if (owner is FragmentActivity) owner else (owner as Fragment).requireContext())) {
+//                        if (immersive && isHide != 3) {//如果状态栏是沉浸式或隐藏的则无需要设置夜间模式
+//                            return
+//                        }
+//                        if (darkColor == null) {
+//                            exeStatusBar.setBackgroundColor(Color.BLACK)
+//                        } else {
+//                            if (darkColor != Color.WHITE) {
+//                                exeStatusBar.setBackgroundColor(darkColor!!)
+//                            }
+//                        }
+//                    }
                 } else if (event == Lifecycle.Event.ON_DESTROY) {
                     StatusBarFactory.clear(source.hashCode())
                 }
@@ -46,8 +67,17 @@ internal class LifeCycleStatusBar(
         })
     }
 
+    //是否是夜间模式
+    private fun isDark(context: Context): Boolean {
+        val uiMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return uiMode == Configuration.UI_MODE_NIGHT_YES
+    }
 
+    /**
+     * 兼容旧版本的fragment的懒加载方式
+     */
     private fun canSet(body: () -> Unit) {
+        //isSetUserVisibleHint 为空，则是新版本，不为空且为true，则是旧版本懒加载且当前fragment已经显示
         if (isSetUserVisibleHint == null || isSetUserVisibleHint!!) {
             body()
         }
@@ -55,6 +85,8 @@ internal class LifeCycleStatusBar(
 
     override fun setBackgroundColor(color: Int) {
         this.color = color
+        loge("setColor $simpleName $color")
+
         updateBgStyle(1)
         canSet {
             exeStatusBar.setBackgroundColor(color)
@@ -130,7 +162,7 @@ internal class LifeCycleStatusBar(
     private fun restore() {
         if (isHide == 3) {
             exeStatusBar.show()
-            Log.e("TAG", "restore: $color")
+            Log.e("TAG", "$code  restore: $color")
             color?.let { exeStatusBar.setBackgroundColor(it) }
             drawableRes?.let { exeStatusBar.setBackground(it) }
             drawable?.let { exeStatusBar.setBackground(it) }
@@ -144,13 +176,18 @@ internal class LifeCycleStatusBar(
             textColor?.let { exeStatusBar.setTextColor(it) }
         }
     }
-
+    //适配懒加载
     fun setUserVisibleHint(visibleHint: Boolean) {
         isSetUserVisibleHint = visibleHint
         if (visibleHint) {
             restore()
         }
     }
+
+
+//    fun setDarkModeColor(color:Int?){
+//        darkColor = color
+//    }
 
 
 }

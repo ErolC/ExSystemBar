@@ -2,6 +2,7 @@ package com.erolc.exbar
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleOwner
 
 /**
  * StatusBar的对象工厂
@@ -12,10 +13,13 @@ internal class StatusBarFactory private constructor() {
     private val map: MutableMap<Int, StatusBar> = mutableMapOf()
 
     companion object {
+        /**
+         * 得到一个工厂对象
+         */
         private val factory: StatusBarFactory by lazy { StatusBarFactory() }
 
         /**
-         * 创建一个生命周期感知的statusBar副本对象
+         * 创建一个生命周期感知的statusBar对象
          * @param activity activity
          */
         fun create(activity: FragmentActivity): StatusBar {
@@ -25,7 +29,7 @@ internal class StatusBarFactory private constructor() {
                 val realStatusBar = StatusBarImpl(activity)
                 synchronized(realStatusBar) {
                     statusBar =
-                        LifeCycleStatusBar(activity.lifecycle, realStatusBar)
+                        LifeCycleStatusBar(activity, realStatusBar)
                     factory.map[key] = statusBar!!
                 }
             }
@@ -34,7 +38,7 @@ internal class StatusBarFactory private constructor() {
         }
 
         /**
-         * 创建一个生命周期感知的statusBar副本对象
+         * 创建一个生命周期感知的statusBar对象
          */
         fun create(fragment: Fragment): StatusBar {
             val key = fragment.hashCode()
@@ -44,7 +48,7 @@ internal class StatusBarFactory private constructor() {
                 val activityStatusBar = create(fragment.requireActivity())
                 synchronized(activityStatusBar) {
                     statusBar =
-                        LifeCycleStatusBar(fragment.lifecycle, activityStatusBar)
+                        LifeCycleStatusBar(fragment, activityStatusBar)
                     factory.map[key] = statusBar!!
                 }
 
@@ -52,8 +56,16 @@ internal class StatusBarFactory private constructor() {
             return statusBar!!
         }
 
-        fun findFragmentWithMap(fragment: Fragment): LifeCycleStatusBar? {
-            return factory.map[fragment.hashCode()] as? LifeCycleStatusBar
+        internal fun create(owner: LifecycleOwner): StatusBar {
+            return if (owner is Fragment) {
+                create(owner)
+            } else {
+                create(owner as FragmentActivity)
+            }
+        }
+
+        fun findStatusBar(owner: LifecycleOwner): LifeCycleStatusBar? {
+            return factory.map[owner.hashCode()] as? LifeCycleStatusBar
         }
 
         /**

@@ -1,6 +1,8 @@
 package com.erolc.statusbarcontrol
 
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorSpace
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,12 +13,30 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.FragmentTestBinding
 
 class TestFragment : Fragment() {
-    private lateinit var statusBar: StatusBar
+    private val statusBar: StatusBar by statusBar(Lifecycle.Event.ON_RESUME) {
+        binding!!.desc.text = "状态栏是黑色"
+        when (index) {
+            0 -> {
+                val parseColor = Color.parseColor("#003322")
+                setBackgroundColor(parseColor)
+                binding!!.desc.text = "状态栏是蓝色"
+            }
+            1 -> {
+                setBackgroundColor(Color.RED)
+                binding!!.desc.text = "状态栏是红色"
+            }
+            else -> {
+                setBackgroundColor(Color.YELLOW)
+                binding!!.desc.text = "状态栏是黄色"
+            }
+        }
+    }
     private var index = 0
     private var binding: FragmentTestBinding? = null
 
@@ -40,34 +60,6 @@ class TestFragment : Fragment() {
         index = arguments?.getInt("index") ?: 0
         binding = FragmentTestBinding.inflate(inflater, container, false)
         binding!!.clickHandler = ClickHandler()
-
-        lifecycle.addObserver(object : LifecycleEventObserver {
-            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                Log.e("TAG", "onStateChanged:test$index  " + event.name)
-            }
-
-        })
-
-        statusBar = statusBar {
-            setBackgroundColor(Color.BLACK)
-            binding!!.desc.text = "状态栏是黑色"
-            when (index) {
-                0 -> {
-                    setBackgroundColor(Color.BLUE)
-                    binding!!.desc.text = "状态栏是蓝色"
-                }
-                1 -> {
-                    setBackgroundColor(Color.RED)
-                    binding!!.desc.text = "状态栏是红色"
-                }
-                else -> {
-                    setBackgroundColor(Color.YELLOW)
-                    binding!!.desc.text = "状态栏是黄色"
-                }
-            }
-        }
-
-
         return binding!!.root
     }
 
@@ -76,10 +68,6 @@ class TestFragment : Fragment() {
         Log.e("TAG", "onResume: ")
     }
 
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        setUserVisibleHint()
-    }
 
     inner class ClickHandler {
         fun hide(view: View) {

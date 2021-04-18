@@ -1,70 +1,103 @@
 package com.erolc.exbar
 
+import android.graphics.Color
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 
-
 /**
- * 使用这种方式，可以在任何地方使用，因为内部保证了都是会在onResume回调中调用
+ * 创建statusBar的几种方式
  */
-fun FragmentActivity.statusBar(body: StatusBar.() -> Unit): StatusBar {
-    val statusBar = getStatusBar()
-    lifecycle.addObserver(object : LifecycleEventObserver {
-        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-            if (event == Lifecycle.Event.ON_RESUME) {
-                statusBar.body()
-            }
-        }
-    })
-    return statusBar
-}
-
-fun Fragment.statusBar(body: StatusBar.() -> Unit): StatusBar {
+fun FragmentActivity.getStatusBar(body: StatusBar.() -> Unit): StatusBar {
     val statusBar = getStatusBar()
     statusBar.body()
     return statusBar
 }
 
-
+/**
+ * 适配旧版本的fragment懒加载
+ */
 fun Fragment.setUserVisibleHint() {
     ExStatusBar.setUserVisibleHint(this)
 }
 
-
-
-@Deprecated("")
-typealias StatusBarRestore = () -> StatusBar
-
 /**
- *  适配旧版本的fragment，以达到自动保持当前状态栏样式
- *
- *  使用方法和[statusBar]类似，不同的是，该方法会得到一个[StatusBarRestore]
- *  需要在[Fragment.setUserVisibleHint]回调中调用一下其invoke方法即可
- *  建议：将fragment版本升到['androidx.appcompat:appcompat:1.2.0']以上，以使用[Fragment.statusBar]方法
- *
- *  该方法后面可能会废弃
+ * 获取StatusBar
  */
-@Deprecated("")
-fun Fragment.compatStatusBar(body: StatusBar.() -> Unit): StatusBarRestore {
-    val statusBar = getCompatStatusBar()
-    return {
-        statusBar.body()
-        statusBar
-    }
-}
-
 fun FragmentActivity.getStatusBar(): StatusBar {
     return ExStatusBar.create(this)
 }
 
-
-fun Fragment.getCompatStatusBar(): StatusBar {
-    return ExStatusBar.compatCreate(this)
-}
-
+/**
+ * 获取StatusBar
+ */
 fun Fragment.getStatusBar(): StatusBar {
     return ExStatusBar.create(this)
+}
+
+/**
+ * 获取StatusBar的委托，在kotlin中通过by的方式获取StatusBar
+ * 例如：
+ * private val statusBar: StatusBar by statusBar {
+ *
+ * }
+ *
+ * @param event 代表[body] 的调用时机，默认是onCreate
+ * @param body 是statusBar在创建的时候就会调用的方法，只会调用一次，可以由[event]指定调用时机
+ */
+fun Fragment.statusBar(
+    event: Lifecycle.Event = Lifecycle.Event.ON_CREATE,
+    body: StatusBar.() -> Unit
+): StatusBarDelegate {
+    return StatusBarDelegate(this, event, body)
+}
+
+/**
+ * 同上[statusBar]
+ */
+fun FragmentActivity.statusBar(
+    event: Lifecycle.Event = Lifecycle.Event.ON_CREATE,
+    body: StatusBar.() -> Unit
+): StatusBarDelegate {
+    return StatusBarDelegate(this, event, body)
+}
+
+/**
+ * 状态栏委托对象
+ */
+class StatusBarDelegate(
+    private val owner: LifecycleOwner,
+    triggerEvent: Lifecycle.Event,
+    private val body: StatusBar.() -> Unit
+) :
+    Lazy<StatusBar> {
+    private var statusBar: StatusBar? = null
+    override val value: StatusBar
+        get() {
+            var temp = statusBar
+            if (temp == null) {
+                temp = ExStatusBar.create(owner)
+                temp.body()
+                statusBar = temp
+            }
+            return statusBar!!
+        }
+
+    init {
+        owner.lifecycle.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (event == triggerEvent) {
+                    value.isShow()
+                }
+            }
+
+        })
+    }
+
+    override fun isInitialized(): Boolean {
+        return statusBar != null
+    }
+
 }

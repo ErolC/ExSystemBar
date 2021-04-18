@@ -14,7 +14,9 @@ import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.FragmentTest1Binding
 
 class TestFragment1 : Fragment() {
-    private lateinit var statusBar: StatusBar
+    private val statusBar: StatusBar by statusBar {
+
+    }
     private var index = 0
     private var binding: FragmentTest1Binding? = null
 
@@ -39,16 +41,12 @@ class TestFragment1 : Fragment() {
         binding = FragmentTest1Binding.inflate(inflater, container, false)
         binding!!.clickHandler = ClickHandler()
 
-        lifecycle.addObserver(object : LifecycleEventObserver {
-            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                Log.e("TAG", "onStateChanged: " + event.name)
-            }
-
-        })
-        statusBar = statusBar {
-//            setBackgroundColor(Color.GRAY)
-//            binding!!.desc.text = "状态栏是灰色"
-        }
+//        lifecycle.addObserver(object : LifecycleEventObserver {
+//            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+//                Log.e("TAG", "onStateChanged: " + event.name)
+//            }
+//
+//        })
 
         return binding!!.root
     }

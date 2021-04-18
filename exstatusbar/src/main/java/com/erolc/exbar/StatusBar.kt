@@ -70,7 +70,7 @@ interface StatusBar {
     /**
      * 幕布，像是在状态栏盖了一层幕布，事实上也是设置状态栏背景颜色，但是这里是通过设置argb设置，并且可以得到一个实时变化的监听
      */
-    @Deprecated("")
+    @Deprecated("已废弃")
     fun  curtain(
         alpha: Int = 0,
         red: Int = 255,

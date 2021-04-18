@@ -1,8 +1,8 @@
 ## ExStatusBar
-这是对状态栏的各种操作进行封装之后的库，可以让你快速简单的操作状态栏。
+这是对状态栏的各种操作进行封装之后的库,而且对生命周期感知，可以让你快速简单的操作状态栏。
 
 ### 加入
-在build.gradle文件中加入
+在根的build.gradle文件中加入
 ```gradle
 allprojects {
     repositories {
@@ -12,10 +12,10 @@ allprojects {
 }
 
 ```
-在app.gradle文件加入
+在build.gradle(app)文件加入
 ```gradle
 dependencies {
- implementation 'com.github.ErolC:ExStatusBar:1.1.3'
+ implementation 'com.github.ErolC:ExStatusBar:1.1.4'
 }
 ```
 ### API
@@ -25,7 +25,7 @@ dependencies {
     setBackgroundColor //设置背景色
     setBackground       //设置背景，可以是drawable，也可以是drawable的资源id
     getBackground   //获取背景，是drawable
-    setTextColor    //设置字体颜色，只有两种，亮系和暗系
+    setTextColor    //设置字体颜色，只有两种，亮系（白色）和暗系（黑色）
     hide        //隐藏状态栏，在状态栏位置下滑可临时呼出状态栏，一段时间后会自动收起
     show        //展示状态栏，和上面是一对
     immersive   //所谓的"沉浸式"，我更喜欢称之为"侵入式"
@@ -33,19 +33,23 @@ dependencies {
     isDark //字体颜色是否是暗系
 ```
 ### 使用
-可通过`ExStatusBar`创建一个StatusBar
+通过`ExStatusBar`可以创建一个StatusBar，但是我更加建议使用我提供的`StatusBarInit`文件中的顶级方法。
+可以直接使用委托的方式，这也是推荐的使用方式：
 ```
-//方式一
-val statusBar = ExStatusBar.create(this)
-//方式二
- val statusBar = statusBar {
-         //可以将设置状态栏的操作都放在这里
-     }
-//方式三
-val statusBarr = getStatusBar()
+#Activity/fragment
+private  val statusBar: StatusBar by statusBar(Lifecycle.Event.ON_CREATE) { //默认指定onCreate时期创建StatusBar对象并执行该方法
+        //使用上述api实现状态栏的设置
+}
 ```
-#### 两种懒加载使用场景
-目前对于Fragment+viewpager，懒加载的方式有两种，对于setUserVisibleHint的懒加载方式，只需要在这个回调中调用setUserVisibleHint()/ExStatusBar.setUserVisibleHint(this)方法就可以了。
+如果需要适配旧版本懒加载需要在`setUserVisibleHint`方法中调用：
+```
+  override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        //code...
+        setUserVisibleHint()
+        //code...
+    }
+```
 
 ## 注意
 ```xml

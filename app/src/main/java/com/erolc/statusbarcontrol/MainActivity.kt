@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.ActivityMainBinding
 import kotlin.reflect.KProperty
@@ -18,7 +19,9 @@ import kotlin.reflect.KProperty
  *  demo 在一个activity使用多个fragment，然后让每个fragment的状态栏都不一样，然后还有是一个次级activity
  */
 class MainActivity : AppCompatActivity() {
-    private lateinit var statusBar: StatusBar
+    private  val statusBar: StatusBar by statusBar(Lifecycle.Event.ON_CREATE) { //默认指定
+        //实现状态栏的设置
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,9 +32,6 @@ class MainActivity : AppCompatActivity() {
 //        或者
 //        val exStatusBar:StatusBar = ExStatusBar(this)
 //        或者
-
-
-        statusBar = ExStatusBar.create(this)
 
     }
 

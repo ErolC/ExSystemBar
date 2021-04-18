@@ -2,6 +2,8 @@ package com.erolc.exbar
 
 
 import android.app.Activity
+import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -209,7 +211,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         contentView.setPadding(0, paddingTop, 0, 0)//设置内容的padding
     }
 
-
+    @Deprecated("")
     private fun FragmentActivity.statusBarCurtain(
         alpha: Int = 0,
         red: Int = 255,
