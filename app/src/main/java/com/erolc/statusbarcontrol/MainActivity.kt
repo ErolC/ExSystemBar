@@ -6,14 +6,15 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.WindowInsets
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.ActivityMainBinding
-import kotlin.reflect.KProperty
 
 /**
  *  demo 在一个activity使用多个fragment，然后让每个fragment的状态栏都不一样，然后还有是一个次级activity
@@ -21,6 +22,7 @@ import kotlin.reflect.KProperty
 class MainActivity : AppCompatActivity() {
     private  val statusBar: StatusBar by statusBar(Lifecycle.Event.ON_CREATE) { //默认指定
         //实现状态栏的设置
+        setBackground(R.color.colorAccent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 //        或者
 //        val exStatusBar:StatusBar = ExStatusBar(this)
 //        或者
-
     }
 
     fun next(view: View) {
@@ -41,11 +42,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun hide(view: View) {
-        statusBar.hide()
+//        statusBar.hide()
     }
 
     fun show(view: View) {
-        statusBar.show()
+//        statusBar.show()
+
+
     }
 
     fun showRedColor(view: View) {
@@ -67,7 +70,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun immersive(view: View) {
-        statusBar.immersive()
+        statusBar.invasion()
     }
 
 }

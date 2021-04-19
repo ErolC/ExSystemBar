@@ -1,8 +1,6 @@
 package com.erolc.statusbarcontrol
 
 import android.graphics.Color
-import android.graphics.ColorMatrix
-import android.graphics.ColorSpace
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,9 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.FragmentTestBinding
@@ -106,7 +101,7 @@ class TestFragment : Fragment() {
         }
 
         fun immersive(view: View) {
-            statusBar.immersive()
+            statusBar.invasion()
         }
 
         fun randomColor(): Int {

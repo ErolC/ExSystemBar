@@ -18,13 +18,10 @@ interface StatusBar {
     fun getHeight():Int
 
     /**
-     * 状态栏的背景色
+     * 状态栏的背景色，如果状态栏的背景并非颜色，那么将返回-1
      */
     fun getBackgroundColor():Int
 
-    /**
-     * 设置状态栏的背景色
-     */
     fun setBackgroundColor(color:Int)
 
     /**
@@ -63,9 +60,9 @@ interface StatusBar {
     fun show()
 
     /**
-     *沉浸式，内容入侵状态栏
+     *内容入侵状态栏
      */
-    fun immersive()
+    fun invasion()
 
     /**
      * 幕布，像是在状态栏盖了一层幕布，事实上也是设置状态栏背景颜色，但是这里是通过设置argb设置，并且可以得到一个实时变化的监听

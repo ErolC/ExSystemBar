@@ -7,15 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.FragmentTest1Binding
 
 class TestFragment1 : Fragment() {
     private val statusBar: StatusBar by statusBar {
-
+        setBackgroundColor(Color.RED)
     }
     private var index = 0
     private var binding: FragmentTest1Binding? = null
@@ -36,7 +33,6 @@ class TestFragment1 : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.e("TAG", "onCreateView: ")
         index = arguments?.getInt("index") ?: 0
         binding = FragmentTest1Binding.inflate(inflater, container, false)
         binding!!.clickHandler = ClickHandler()
@@ -53,7 +49,6 @@ class TestFragment1 : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.e("TAG", "onResume: ")
     }
 
     inner class ClickHandler {
@@ -92,7 +87,7 @@ class TestFragment1 : Fragment() {
         }
 
         fun immersive(view: View) {
-            statusBar.immersive()
+            statusBar.invasion()
         }
 
         fun randomColor(): Int {

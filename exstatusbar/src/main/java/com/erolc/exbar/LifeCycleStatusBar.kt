@@ -2,11 +2,9 @@ package com.erolc.exbar
 
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -22,6 +20,7 @@ internal class LifeCycleStatusBar(
     owner: LifecycleOwner,
     private val statusBar: StatusBar
 ) : StatusBar by statusBar {
+    private val TAG = "ExStatusBar"
 
     private var color: Int? = null
     private var drawableRes: Int? = null
@@ -31,9 +30,9 @@ internal class LifeCycleStatusBar(
     private var isHide: Int = 3
     private var immersive: Boolean = false
     private var isSetUserVisibleHint: Boolean? = null
-    private val code = owner.hashCode()
+    private val code = owner
     val simpleName = owner.javaClass.simpleName
-    private var darkColor:Int? = null
+    private var darkColor: Int? = null
 
     //创建fragment的StatusBar是需要他所依附的activity的StatusBar
     private val exeStatusBar =
@@ -134,11 +133,11 @@ internal class LifeCycleStatusBar(
         }
     }
 
-    override fun immersive() {
+    override fun invasion() {
         immersive = true
         isHide = 0
         canSet {
-            exeStatusBar.immersive()
+            exeStatusBar.invasion()
         }
     }
 
@@ -160,22 +159,37 @@ internal class LifeCycleStatusBar(
      * 对资源进行恢复
      */
     private fun restore() {
+        Log.d(TAG, "$simpleName  restore:")
         if (isHide == 3) {
             exeStatusBar.show()
-            Log.e("TAG", "$code  restore: $color")
-            color?.let { exeStatusBar.setBackgroundColor(it) }
-            drawableRes?.let { exeStatusBar.setBackground(it) }
-            drawable?.let { exeStatusBar.setBackground(it) }
-            textColor?.let { exeStatusBar.setTextColor(it) }
+            color?.let {
+                exeStatusBar.setBackgroundColor(it)
+                Log.d(TAG, "restore setBackgroundColor: $it")
+            }
+            drawableRes?.let {
+                exeStatusBar.setBackground(it)
+                Log.d(TAG, "restore setBackground: $it")
+            }
+            drawable?.let {
+                exeStatusBar.setBackground(it)
+                Log.d(TAG, "restore setBackground: $it")
+            }
+            textColor?.let {
+                exeStatusBar.setTextColor(it)
+                Log.d(TAG, "restore setTextColor: $it")
+            }
         } else if (!immersive) {
+            Log.d(TAG, "restore hide:${isHide == 1}")
             exeStatusBar.hide(isHide == 1)
         }
 
         if (immersive) {
-            exeStatusBar.immersive()
+            Log.d(TAG, "restore immersive")
+            exeStatusBar.invasion()
             textColor?.let { exeStatusBar.setTextColor(it) }
         }
     }
+
     //适配懒加载
     fun setUserVisibleHint(visibleHint: Boolean) {
         isSetUserVisibleHint = visibleHint

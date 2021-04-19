@@ -15,7 +15,7 @@ allprojects {
 在build.gradle(app)文件加入
 ```gradle
 dependencies {
- implementation 'com.gitee.erolc:ExStatusBar:1.0.5'
+ implementation 'com.gitee.erolc:ExStatusBar:1.0.6'
 }
 ```
 ### API
@@ -23,12 +23,12 @@ dependencies {
     getHeight //获取状态栏高度
     getBackgroundColor //获取背景色
     setBackgroundColor //设置背景色
-    setBackground       //设置背景，可以是drawable，也可以是drawable的资源id
+    setBackground     //设置背景，可以是drawable，也可以是drawable/color的资源id
     getBackground   //获取背景，是drawable
     setTextColor    //设置字体颜色，只有两种，亮系（白色）和暗系（黑色）
-    hide        //隐藏状态栏，在状态栏位置下滑可临时呼出状态栏，一段时间后会自动收起
+    hide(boolean)        //隐藏状态栏，在状态栏位置下滑可临时呼出状态栏，一段时间后会自动收起；适配刘海：设置为true，内容会完全入侵到刘海位置
     show        //展示状态栏，和上面是一对
-    immersive   //所谓的"沉浸式"，我更喜欢称之为"侵入式"
+    invasion   //"侵入式",应用内容侵入到状态栏中
     isShow //状态栏是否展示
     isDark //字体颜色是否是暗系
 ```
