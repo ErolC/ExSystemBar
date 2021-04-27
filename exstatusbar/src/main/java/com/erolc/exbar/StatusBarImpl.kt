@@ -86,12 +86,12 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
 
     private fun hideStatusBg() {
         val view = activity.contentView.findViewWithTag<View>(STATUS_BAR_BG)
-        view.visibility = View.GONE
+        view?.visibility = View.GONE
     }
 
     private fun showStatusBg() {
         val view = activity.contentView.findViewWithTag<View>(STATUS_BAR_BG)
-        view.visibility = View.VISIBLE
+        view?.visibility = View.VISIBLE
     }
 
     /**
@@ -299,12 +299,21 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
     }
 
     override fun setBackground(res: Int) {
-        activity.getStatusBarView().setBackgroundResource(res)
-
+        val statusBarView = activity.getStatusBarView();
+        statusBarView.setBackgroundResource(res)
+        val background = statusBarView.background
+        if (background is ColorDrawable) {
+            val lightColor = isLightColor(background.color)
+            setTextColor(lightColor)//设置自定义状态栏的字体颜色
+        }
     }
 
     override fun setBackground(drawable: Drawable) {
         activity.getStatusBarView().background = drawable
+        if (drawable is ColorDrawable) {
+            val lightColor = isLightColor(drawable.color)
+            setTextColor(lightColor)//设置自定义状态栏的字体颜色
+        }
     }
 
     override fun getBackground(): Drawable? {
