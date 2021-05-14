@@ -1,6 +1,7 @@
 package com.erolc.exbar
 
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -9,8 +10,7 @@ import android.os.Build
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
-import android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-import android.view.View.SYSTEM_UI_FLAG_VISIBLE
+import android.view.View.*
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
@@ -158,6 +158,29 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
             height
         }
 
+    /**
+     * 系统标题栏高度
+     */
+    private val Activity.hasActionBar
+        @SuppressLint("ResourceType")
+        get() = run {
+            val value = TypedValue()
+//            val height =
+//                if (theme.resolveAttribute(android.R.attr.windowActionBar, value, true))//判断标题栏是否存在
+//                    value.data
+//                else
+//                    0
+            val typedArray =obtainStyledAttributes(intArrayOf(android.R.attr.windowActionBar,android.R.attr.windowNoTitle))
+            val boolean = typedArray.getBoolean(1, false)
+            val title = typedArray.getBoolean(2, false)
+            typedArray
+            typedArray.recycle();
+
+            val height = 0
+            log("the statusBar hasActionBar is $boolean --  $title")
+            height
+        }
+
 
     /**
      * 状态栏字体颜色是否为暗色
@@ -193,7 +216,7 @@ internal class StatusBarImpl(private val activity: Activity) : StatusBar {
         val findViewById =
             window.decorView.findViewById<View>(R.id.action_mode_bar_stub)//这个view在标题栏存在时，不存在，
         var paddingTop =//计算并得到标题栏存在或者不存在的时候的上内边距
-            if (findViewById == null) {//表明标题栏存在
+            if (findViewById == null || findViewById.visibility != GONE) {//表明标题栏存在
                 actionBarHeight + if (isShowStatusBar) getHeight() else 0//当标题栏存在的时候，上内边距就需要包括标题栏的高度，以及自定义的状态栏的高度，当然前提是这个状态栏存在
             } else {
                 if (isShowStatusBar) getHeight() else 0//当标题栏不存在的时候，只需要考虑状态栏的高度

@@ -15,7 +15,7 @@ allprojects {
 在build.gradle(app)文件加入
 ```gradle
 dependencies {
- implementation 'com.gitee.erolc:ExStatusBar:1.0.7'
+ implementation 'com.gitee.erolc:ExStatusBar:1.0.8'
 }
 ```
 ### API

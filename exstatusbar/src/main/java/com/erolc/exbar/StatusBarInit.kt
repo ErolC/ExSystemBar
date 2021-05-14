@@ -48,20 +48,20 @@ fun Fragment.getStatusBar(): StatusBar {
  * @param body 是statusBar在创建的时候就会调用的方法，只会调用一次，可以由[event]指定调用时机
  */
 fun Fragment.statusBar(
-    event: Lifecycle.Event = Lifecycle.Event.ON_CREATE,
     body: StatusBar.() -> Unit
 ): StatusBarDelegate {
-    return StatusBarDelegate(this, event, body)
+    return StatusBarDelegate(this, body)
 }
 
 /**
  * 同上[statusBar]
+ * @param event 已经没有作用了，仅为了兼容以前
  */
 fun FragmentActivity.statusBar(
-    event: Lifecycle.Event = Lifecycle.Event.ON_CREATE,
+    event:Lifecycle.Event = Lifecycle.Event.ON_RESUME,
     body: StatusBar.() -> Unit
 ): StatusBarDelegate {
-    return StatusBarDelegate(this, event, body)
+    return StatusBarDelegate(this, body)
 }
 
 /**
@@ -69,7 +69,6 @@ fun FragmentActivity.statusBar(
  */
 class StatusBarDelegate(
     private val owner: LifecycleOwner,
-    triggerEvent: Lifecycle.Event,
     private val body: StatusBar.() -> Unit
 ) :
     Lazy<StatusBar> {
@@ -88,7 +87,7 @@ class StatusBarDelegate(
     init {
         owner.lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                if (event == triggerEvent) {
+                if (event == Lifecycle.Event.ON_RESUME) {
                     value.isShow()
                 }
             }
