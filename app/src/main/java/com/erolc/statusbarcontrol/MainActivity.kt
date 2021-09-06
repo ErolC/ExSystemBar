@@ -2,17 +2,14 @@ package com.erolc.statusbarcontrol
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.WindowInsets
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Lifecycle
 import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.ActivityMainBinding
 
@@ -20,7 +17,7 @@ import com.erolc.statusbarcontrol.databinding.ActivityMainBinding
  *  demo 在一个activity使用多个fragment，然后让每个fragment的状态栏都不一样，然后还有是一个次级activity
  */
 class MainActivity : AppCompatActivity() {
-    private  val statusBar: StatusBar by statusBar { //默认指定
+    private val statusBar by systemBar { //默认指定
         //实现状态栏的设置
         setBackground(R.color.colorAccent)
     }
@@ -34,6 +31,17 @@ class MainActivity : AppCompatActivity() {
 //        或者
 //        val exStatusBar:StatusBar = ExStatusBar(this)
 //        或者
+//        val listener = object : OrientationEventListener(this) {
+//            var orientation = ORIENTATION_LANDSCAPE
+//            override fun onOrientationChanged(arount: Int) {
+//                val temp = resources.configuration.orientation
+//                if (temp != orientation) {
+//                    Log.e("TAG", "onOrientationChanged: $orientation $arount")
+//                    orientation = temp
+//                }
+//            }
+//        }
+//        listener.enable()
     }
 
     fun next(view: View) {
@@ -46,9 +54,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun show(view: View) {
-//        statusBar.show()
+        statusBar.show()
 
 
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        Log.e("TAG", "onConfigurationChanged: ")
     }
 
     fun showRedColor(view: View) {
@@ -64,13 +77,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun switchTextColor(view: View) {
-        val textColorIsDark = statusBar.isDark()
+        val textColorIsDark = statusBar.getContentIsDark()
         Log.e("TAG", "switchTextColor: $textColorIsDark")
-        statusBar.setTextColor(!textColorIsDark)
+        statusBar.setContentColor(!textColorIsDark)
     }
 
     fun immersive(view: View) {
-        statusBar.invasion()
+        statusBar.fullScreen()
     }
 
 }

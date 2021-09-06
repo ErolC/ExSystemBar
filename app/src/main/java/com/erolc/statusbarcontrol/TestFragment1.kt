@@ -1,8 +1,8 @@
 package com.erolc.statusbarcontrol
 
+import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +11,7 @@ import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.FragmentTest1Binding
 
 class TestFragment1 : Fragment() {
-    private val statusBar: StatusBar by statusBar {
+    private val statusBar by statusBar {
         setBackgroundColor(Color.RED)
     }
     private var index = 0
@@ -47,10 +47,6 @@ class TestFragment1 : Fragment() {
         return binding!!.root
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     inner class ClickHandler {
         fun hide(view: View) {
             statusBar.hide()
@@ -61,10 +57,11 @@ class TestFragment1 : Fragment() {
         }
 
         fun next(view: View) {
-            val requireActivity = requireActivity()
-            if (requireActivity is NavTestActivity) {
-                requireActivity.next(++index)
-            }
+//            val requireActivity = requireActivity()
+//            if (requireActivity is NavTestActivity) {
+//                requireActivity.next(++index)
+//            }
+            requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
         fun showWithDrawable(view: View) {
@@ -81,9 +78,8 @@ class TestFragment1 : Fragment() {
         }
 
         fun switchTextColor(view: View) {
-            val textColorIsDark = statusBar.isDark()
-            Log.e("TAG", "switchTextColor: $textColorIsDark")
-            statusBar.setTextColor(!textColorIsDark)
+            val textColorIsDark = statusBar.getContentIsDark()
+            statusBar.setContentColor(!textColorIsDark)
         }
 
         fun immersive(view: View) {

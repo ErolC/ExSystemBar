@@ -13,15 +13,15 @@ class NavTestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding: ActivityNavBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_nav)
-        next(0)
+//        next(0)
     }
 
-    fun next(index:Int){
+//    fun next(index:Int){
 //        supportFragmentManager.beginTransaction()
 //            .replace(R.id.layout, TestFragment.newInstance(index))
 //            .addToBackStack("index$index")
 //            .commit()
-    }
+//    }
 
 
 

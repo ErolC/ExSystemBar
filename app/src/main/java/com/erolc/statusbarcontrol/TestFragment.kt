@@ -8,19 +8,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.FragmentTestBinding
 
 class TestFragment : Fragment() {
-    private val statusBar: StatusBar by statusBar(Lifecycle.Event.ON_RESUME) {
+    private val statusBar by navigationBar {
         binding!!.desc.text = "状态栏是黑色"
         when (index) {
             0 -> {
-                val parseColor = Color.parseColor("#003322")
-                setBackgroundColor(parseColor)
-                binding!!.desc.text = "状态栏是蓝色"
+//                val parseColor = Color.parseColor("#003322")
+//                setBackgroundColor(parseColor)
+//                binding!!.desc.text = "状态栏是蓝色"
             }
             1 -> {
                 setBackgroundColor(Color.RED)
@@ -95,9 +94,8 @@ class TestFragment : Fragment() {
         }
 
         fun switchTextColor(view: View) {
-            val textColorIsDark = statusBar.isDark()
-            Log.e("TAG", "switchTextColor: $textColorIsDark")
-            statusBar.setTextColor(!textColorIsDark)
+            val textColorIsDark = statusBar.getContentIsDark()
+            statusBar.setContentColor(!textColorIsDark)
         }
 
         fun immersive(view: View) {

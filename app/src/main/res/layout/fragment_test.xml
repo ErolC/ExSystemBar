@@ -38,20 +38,21 @@
                 tools:text="状态栏是红色" />
 
         <Button
-                android:id="@+id/hide"
+                android:id="@+id/show"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="@{clickHandler::hide}"
                 android:text="隐藏"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintBottom_toTopOf="@id/hide" />
 
         <Button
-                android:id="@+id/show"
+                android:id="@+id/hide"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="@{clickHandler::show}"
                 android:text="展示"
-                app:layout_constraintBottom_toTopOf="@id/hide" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                 />
 
         <Button
                 android:id="@+id/showColor"
