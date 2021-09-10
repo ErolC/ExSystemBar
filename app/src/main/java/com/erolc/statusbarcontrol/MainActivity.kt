@@ -7,8 +7,12 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.Window
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import com.erolc.exbar.*
 import com.erolc.statusbarcontrol.databinding.ActivityMainBinding
@@ -26,22 +30,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding =
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-//        statusBar = getStatusBar()
-//        AndroidBug5497Workaround.assistActivity(this)
-//        或者
-//        val exStatusBar:StatusBar = ExStatusBar(this)
-//        或者
-//        val listener = object : OrientationEventListener(this) {
-//            var orientation = ORIENTATION_LANDSCAPE
-//            override fun onOrientationChanged(arount: Int) {
-//                val temp = resources.configuration.orientation
-//                if (temp != orientation) {
-//                    Log.e("TAG", "onOrientationChanged: $orientation $arount")
-//                    orientation = temp
-//                }
-//            }
-//        }
-//        listener.enable()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root){view,insets->
+            val inset = insets.getInsets(WindowInsetsCompat.Type.ime())
+            val height = contentView.computeVisibleDisplayHeight()
+            Log.e("TAG", "onCreate: $inset  -- $height" )
+            insets
+        }
     }
 
     fun next(view: View) {
@@ -92,3 +86,5 @@ class MainActivity : AppCompatActivity() {
 fun <T> Activity.showToast(t: T) {
     Toast.makeText(this, "$t", Toast.LENGTH_SHORT).show()
 }
+
+private val Activity.contentView get() = window.decorView.findViewById<FrameLayout>(Window.ID_ANDROID_CONTENT)

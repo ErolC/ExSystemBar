@@ -2,6 +2,7 @@ package com.erolc.exbar.bar
 
 
 import android.app.Activity
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -21,8 +22,9 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.updateLayoutParams
-import com.erolc.exbar.R
+import com.erolc.exbar.*
 import com.erolc.exbar.log
+import com.erolc.exbar.loge
 import com.erolc.exbar.systemBar.SystemBarImpl
 
 
@@ -45,7 +47,8 @@ internal class StatusBarImpl(
 
 
     private var statusBar: View?
-    private var insets: Insets? = null
+    private var offset = 0
+    private var bottom = 0
 
     init {
         /**
@@ -54,8 +57,20 @@ internal class StatusBarImpl(
 //        initBg()
         statusBar = activity.contentView.findViewWithTag(STATUS_BAR)
             ?: activity.getStatusBarView()//通过一开始就使用自定义状态栏解决在运行时第一次使用的时候会出现布局底部留空
-    }
 
+//        activity.contentView.viewTreeObserver.addOnGlobalLayoutListener {
+//            if (activity.window.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)) {
+//                val r = Rect()
+//                activity.contentView.getWindowVisibleDisplayFrame(r)
+//                if (bottom == 0) {
+//                    bottom = r.bottom
+//                }else{
+//                    offset = bottom-r.bottom
+//                    updateStatus()
+//                }
+//            }
+//        }
+    }
     /**
      * 设置该方法，在调用[hide]的时候，是刘海屏，内容部分布局也会侵入到状态栏部分，如果刘海挡住了你的部分内容，可以将上边距设置为[getHeight]的高度避免
      */
@@ -126,6 +141,13 @@ internal class StatusBarImpl(
 //        updateStatus()
 //    }
 
+    fun View.computeVisibleDisplayHeight(): Int {
+        val r = Rect()
+        getWindowVisibleDisplayFrame(r)
+        loge(r.bottom)
+        return r.bottom - r.top
+    }
+
     /**
      * 自定义StatusBar
      * 该方法被调用的时候就已经替换了系统状态栏
@@ -145,7 +167,12 @@ internal class StatusBarImpl(
     private fun updateStatus() {
         findStatusBar()?.updateLayoutParams<FrameLayout.LayoutParams> {
             height = getHeight()//设置自定义状态栏高度
-            topMargin = -activity.contentView.paddingTop
+            val hasSoftMode = activity.window.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+            if (hasSoftMode) {
+                topMargin = -activity.contentView.paddingTop+offset
+            }else{
+                topMargin = -activity.contentView.paddingTop
+            }
         }
     }
 

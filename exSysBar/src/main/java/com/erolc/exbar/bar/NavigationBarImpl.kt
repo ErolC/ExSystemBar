@@ -95,6 +95,11 @@ class NavigationBarImpl(
         findNavBar()?.updateLayoutParams<FrameLayout.LayoutParams> {
 
             inset?.apply {
+                if (bottom == right && right == 0) {
+                    height = 0
+                    width = 0
+                    return@apply
+                }
                 height = if (bottom == 0) FrameLayout.LayoutParams.WRAP_CONTENT else {
                     gravity = Gravity.BOTTOM
                     bottom
@@ -103,6 +108,7 @@ class NavigationBarImpl(
                     gravity = Gravity.END
                     right
                 }
+
                 rightMargin = -activity.contentView.paddingRight
                 bottomMargin = -activity.contentView.paddingBottom
             }

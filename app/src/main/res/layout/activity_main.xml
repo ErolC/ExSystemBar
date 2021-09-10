@@ -24,7 +24,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <EditText
                 android:id="@+id/hide"
                 android:onClick="hide"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -40,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-        <Button
+        <EditText
                 android:id="@+id/showColor"
                 android:onClick="showRedColor"
                 app:layout_constraintBottom_toTopOf="@id/show"

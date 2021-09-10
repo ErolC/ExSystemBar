@@ -11,6 +11,10 @@ import com.erolc.exbar.systemBar.SystemBar
  */
 object ExSystemBar {
     /**
+     * 由于setDecorFitsSystemWindows的原因，所以需要对ime做适配，否则adjustReSize会有问题
+     */
+    var adapterIme = true
+    /**
      * 得到activity对应的StatusBar
      */
     @JvmStatic
@@ -43,5 +47,6 @@ object ExSystemBar {
         val create = SystemBarFactory.findStatusBar(fragment)
         create?.setUserVisibleHint(fragment.userVisibleHint)
     }
+
 }
 

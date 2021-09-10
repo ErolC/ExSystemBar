@@ -1,47 +1,47 @@
 package com.erolc.exbar.systemBar
 
 import android.app.Activity
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.core.view.*
+import com.erolc.exbar.*
 
 import com.erolc.exbar.bar.Bar
 import com.erolc.exbar.bar.LifeCycleBar
 import com.erolc.exbar.bar.NavigationBarImpl
 import com.erolc.exbar.bar.StatusBarImpl
-import com.erolc.exbar.loge
 
 /**
  * create by erolc at 2021/9/3 16:53.
  */
 class SystemBarImpl(
-    window: Window, val navigationBar: LifeCycleBar,
+    activity: Activity, val navigationBar: LifeCycleBar,
     val statusBar: LifeCycleBar
 ) : SystemBar {
 
     init {
         //将内容入侵到状态栏和导航栏中
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(activity.window, false)
 //        //将状态栏和背景栏变透明
-        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(activity.window.decorView) { v, insets ->
             val nBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            val sBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val navBar = navigationBar.exeBar as NavigationBarImpl
-            val statusBar = statusBar.exeBar as StatusBarImpl
-//            statusBar.updateBar(sBar)
             navBar.updateBar(nBar)
             insets
         }
-
+//        imeAnim(activity)
         statusBar.setSystemBar(this)
         navigationBar.setSystemBar(this)
     }
 
     private val Activity.contentView get() = window.decorView.findViewById<FrameLayout>(Window.ID_ANDROID_CONTENT)
-
 
     fun updateLayout(activity: Activity, defaultValue: Int, type: Int) {
         var paddingTop = (statusBar.exeBar as StatusBarImpl).getLayoutValue()
@@ -118,5 +118,41 @@ class SystemBarImpl(
     override fun show() {
         navigationBar.show()
         statusBar.show()
+    }
+
+    private fun imeAnim(activity: Activity) {
+        if (activity.window.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)) {
+            ViewCompat.setOnApplyWindowInsetsListener(activity.contentView,
+                object : OnApplyWindowInsetsListener {
+                    private var isChange = false
+                    private var isFirst = true
+
+                    override fun onApplyWindowInsets(
+                        view: View,
+                        insets: WindowInsetsCompat
+                    ): WindowInsetsCompat {
+                        val isVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+                        if (!ExSystemBar.adapterIme) {
+                            return insets
+                        }
+                        if (isFirst) {
+                            view.viewTreeObserver.addOnGlobalLayoutListener {
+                                if (isFirst) {
+                                    view.updateLayoutParams { height = view.measuredHeight }
+                                    isFirst = false
+                                }
+                            }
+                        }
+
+                        if (isChange != isVisible) {
+                            val contentHeight = view.computeVisibleDisplayHeight()
+                            view.heightAnim(contentHeight, 100)
+                            isChange = isVisible
+                        }
+                        return insets
+                    }
+                })
+        }
+
     }
 }

@@ -37,7 +37,7 @@ internal class SystemBarFactory private constructor() {
                 synchronized(realStatusBar) {
                     val statusBar = LifeCycleBar(activity, activity, realStatusBar)
                     val navBar = LifeCycleBar(activity, activity, realNavBar)
-                    systemBar = SystemBarImpl(activity.window, navBar, statusBar)
+                    systemBar = SystemBarImpl(activity, navBar, statusBar)
                     factory.map[key] = systemBar!!
                 }
             }
@@ -65,7 +65,7 @@ internal class SystemBarFactory private constructor() {
                         fragment.requireActivity(),
                         activitySystemBar.navigationBar
                     )
-                    systemBar = SystemBarImpl(fragment.requireActivity().window, navBar, statusBar)
+                    systemBar = SystemBarImpl(fragment.requireActivity(), navBar, statusBar)
                     factory.map[key] = systemBar!!
                 }
 
