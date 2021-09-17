@@ -6,9 +6,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.erolc.exbar.bar.Bar
-import com.erolc.exbar.systemBar.NAVIGATION_BAR
-import com.erolc.exbar.systemBar.STATUS_BAR
 import com.erolc.exbar.systemBar.SystemBar
+import com.erolc.exbar.systemBar.SystemBar.Companion.NAVIGATION_BAR
+import com.erolc.exbar.systemBar.SystemBar.Companion.STATUS_BAR
 
 /**
  * 创建statusBar的几种方式

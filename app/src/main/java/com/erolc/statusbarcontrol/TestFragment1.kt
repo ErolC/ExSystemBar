@@ -13,6 +13,7 @@ import com.erolc.statusbarcontrol.databinding.FragmentTest1Binding
 class TestFragment1 : Fragment() {
     private val statusBar by statusBar {
         setBackgroundColor(Color.RED)
+        invasion()
     }
     private var index = 0
     private var binding: FragmentTest1Binding? = null

@@ -17,6 +17,7 @@ import com.erolc.exbar.bar.Bar
 import com.erolc.exbar.bar.LifeCycleBar
 import com.erolc.exbar.bar.NavigationBarImpl
 import com.erolc.exbar.bar.StatusBarImpl
+import com.erolc.exbar.systemBar.SystemBar.Companion.STATUS_BAR
 
 /**
  * create by erolc at 2021/9/3 16:53.

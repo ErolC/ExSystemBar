@@ -4,17 +4,6 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.core.view.WindowInsetsControllerCompat
 import com.erolc.exbar.bar.Bar
-
-/**
- * 代表状态栏
- */
-const val STATUS_BAR = 0
-
-/**
- * 代表导航栏
- */
-const val NAVIGATION_BAR = 1
-
 /**
  * create by erolc at 2021/9/3 16:18.
  * 系统栏，代表状态栏和导航栏
@@ -68,4 +57,17 @@ interface SystemBar {
      * 展示系统栏
      */
     fun show()
+
+    companion object{
+        /**
+         * 代表状态栏
+         */
+        const val STATUS_BAR = 0
+
+        /**
+         * 代表导航栏
+         */
+        const val NAVIGATION_BAR = 1
+
+    }
 }

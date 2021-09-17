@@ -71,6 +71,7 @@ internal class StatusBarImpl(
 //            }
 //        }
     }
+
     /**
      * 设置该方法，在调用[hide]的时候，是刘海屏，内容部分布局也会侵入到状态栏部分，如果刘海挡住了你的部分内容，可以将上边距设置为[getHeight]的高度避免
      */
@@ -167,10 +168,11 @@ internal class StatusBarImpl(
     private fun updateStatus() {
         findStatusBar()?.updateLayoutParams<FrameLayout.LayoutParams> {
             height = getHeight()//设置自定义状态栏高度
-            val hasSoftMode = activity.window.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+            val hasSoftMode =
+                activity.window.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
             if (hasSoftMode) {
-                topMargin = -activity.contentView.paddingTop+offset
-            }else{
+                topMargin = -activity.contentView.paddingTop + offset
+            } else {
                 topMargin = -activity.contentView.paddingTop
             }
         }
@@ -327,6 +329,8 @@ internal class StatusBarImpl(
      * 入侵
      */
     override fun invasion() {
-        activity.updateLayout(0)
+        activity.contentView.post {
+            activity.updateLayout(0)
+        }
     }
 }
