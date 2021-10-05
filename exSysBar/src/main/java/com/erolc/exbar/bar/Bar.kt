@@ -35,6 +35,8 @@ interface Bar {
      */
     fun getBackground(): Drawable?
 
+    fun getDefaultBackgroundColor():Int
+
     /**
      * 设置状态栏内容是否是暗系
      * @param isDark true-黑色，false-白色
@@ -58,6 +60,13 @@ interface Bar {
      */
     fun invasion()
 
+    fun isInvasion():Boolean
+
+    /**
+     * 内容从状态栏中退出，回到原本的状态
+     */
+    fun unInvasion()
+
     /**
      * 栏是否展示
      */
@@ -68,9 +77,5 @@ interface Bar {
      */
     fun getContentIsDark():Boolean
 
-    /**
-     * 恢复到默认的状态
-     */
-    fun recovery()
-
+    fun onConfigurationChanged()
 }

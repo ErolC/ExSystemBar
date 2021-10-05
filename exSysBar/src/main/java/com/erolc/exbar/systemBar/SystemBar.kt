@@ -58,6 +58,8 @@ interface SystemBar {
      */
     fun show()
 
+    fun onConfigurationChanged()
+
     companion object{
         /**
          * 代表状态栏

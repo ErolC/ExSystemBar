@@ -23,13 +23,13 @@ import com.erolc.exbar.systemBar.SystemBar.Companion.STATUS_BAR
  * create by erolc at 2021/9/3 16:53.
  */
 class SystemBarImpl(
-    activity: Activity, val navigationBar: LifeCycleBar,
-    val statusBar: LifeCycleBar
+    activity: Activity, val navigationBar: LifeCycleBar, val statusBar: LifeCycleBar
 ) : SystemBar {
 
     init {
         //将内容入侵到状态栏和导航栏中
         WindowCompat.setDecorFitsSystemWindows(activity.window, false)
+
 //        //将状态栏和背景栏变透明
         ViewCompat.setOnApplyWindowInsetsListener(activity.window.decorView) { v, insets ->
             val nBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
@@ -45,17 +45,21 @@ class SystemBarImpl(
     private val Activity.contentView get() = window.decorView.findViewById<FrameLayout>(Window.ID_ANDROID_CONTENT)
 
     fun updateLayout(activity: Activity, defaultValue: Int, type: Int) {
-        var paddingTop = (statusBar.exeBar as StatusBarImpl).getLayoutValue()
+        val statusBar = statusBar.exeBar as StatusBarImpl
+        var paddingTop = statusBar.getLayoutValue()
         val navBar = (navigationBar.exeBar as NavigationBarImpl)
         val (right, bottom) = navBar.getLayoutValue()
         var paddingRight = right
         var paddingBottom = bottom
         if (defaultValue != -1) {
             when (type) {
-                STATUS_BAR -> paddingTop = defaultValue
+                STATUS_BAR -> {
+                    paddingTop = defaultValue
+                }
                 else -> {
                     if (paddingBottom != 0) {
                         paddingBottom = defaultValue
+                        loge("default")
                     } else {
                         paddingRight = defaultValue
                     }
@@ -63,7 +67,6 @@ class SystemBarImpl(
             }
         }
         activity.contentView.clipToPadding = false//让子view可以扩展到padding中去
-
         activity.contentView.setPadding(0, paddingTop, paddingRight, paddingBottom)//设置内容的padding
     }
 
@@ -119,6 +122,11 @@ class SystemBarImpl(
     override fun show() {
         navigationBar.show()
         statusBar.show()
+    }
+
+    override fun onConfigurationChanged() {
+        statusBar.restore()
+        navigationBar.restore()
     }
 
     private fun imeAnim(activity: Activity) {

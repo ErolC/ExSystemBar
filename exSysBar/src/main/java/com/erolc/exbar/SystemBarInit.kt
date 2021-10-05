@@ -20,13 +20,13 @@ fun FragmentActivity.getSystemBar(body: (SystemBar.() -> Unit)? = null): SystemB
 }
 
 fun FragmentActivity.getStatusBar(body: (Bar.() -> Unit)? = null): Bar {
-    val statusBar = getSystemBar().getBar(STATUS_BAR)
+    val statusBar = ExSystemBar.createStatusBar(this)
     body?.invoke(statusBar)
     return statusBar
 }
 
 fun FragmentActivity.getNavigationBar(body: (Bar.() -> Unit)? = null): Bar {
-    val navBar = getSystemBar().getBar(NAVIGATION_BAR)
+    val navBar = ExSystemBar.createNavigationBar(this)
     body?.invoke(navBar)
     return navBar
 }
@@ -39,22 +39,15 @@ fun Fragment.getSystemBar(body: (SystemBar.() -> Unit)? = null): SystemBar {
 }
 
 fun Fragment.getStatusBar(body: (Bar.() -> Unit)? = null): Bar {
-    val statusBar = getSystemBar().getBar(STATUS_BAR)
+    val statusBar = ExSystemBar.createStatusBar(this)
     body?.invoke(statusBar)
     return statusBar
 }
 
 fun Fragment.getNavigationBar(body: (Bar.() -> Unit)? = null): Bar {
-    val navBar = getSystemBar().getBar(NAVIGATION_BAR)
+    val navBar = ExSystemBar.createNavigationBar(this)
     body?.invoke(navBar)
     return navBar
-}
-
-/**
- * 适配旧版本的fragment懒加载
- */
-fun Fragment.setUserVisibleHint() {
-    ExSystemBar.setUserVisibleHint(this)
 }
 
 /**

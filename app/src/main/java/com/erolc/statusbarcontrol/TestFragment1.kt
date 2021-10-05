@@ -1,8 +1,10 @@
 package com.erolc.statusbarcontrol
 
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,9 +14,9 @@ import com.erolc.statusbarcontrol.databinding.FragmentTest1Binding
 
 class TestFragment1 : Fragment() {
     private val statusBar by statusBar {
-        setBackgroundColor(Color.RED)
-        invasion()
+//        invasion()
     }
+
     private var index = 0
     private var binding: FragmentTest1Binding? = null
 
@@ -48,6 +50,12 @@ class TestFragment1 : Fragment() {
         return binding!!.root
     }
 
+//    override fun onConfigurationChanged(newConfig: Configuration) {
+//        super.onConfigurationChanged(newConfig)
+//        statusBar.onConfigurationChanged()
+////        Log.e("TAG", "onConfigurationChanged: " )
+//    }
+
     inner class ClickHandler {
         fun hide(view: View) {
             statusBar.hide()
@@ -62,7 +70,7 @@ class TestFragment1 : Fragment() {
 //            if (requireActivity is NavTestActivity) {
 //                requireActivity.next(++index)
 //            }
-            requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//            requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
         fun showWithDrawable(view: View) {

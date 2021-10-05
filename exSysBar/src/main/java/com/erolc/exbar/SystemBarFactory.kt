@@ -34,7 +34,7 @@ internal class SystemBarFactory private constructor() {
                 val realStatusBar = StatusBarImpl(activity)
                 val realNavBar = NavigationBarImpl(activity)
 
-                synchronized(realStatusBar) {
+                synchronized(SystemBarImpl::class) {
                     val statusBar = LifeCycleBar(activity, activity, realStatusBar)
                     val navBar = LifeCycleBar(activity, activity, realNavBar)
                     systemBar = SystemBarImpl(activity, navBar, statusBar)
@@ -54,7 +54,7 @@ internal class SystemBarFactory private constructor() {
             if (systemBar == null) {
                 //如果这里获取不到activity，那么证明当前的fragment不适合操作statusbar
                 val activitySystemBar = create(fragment.requireActivity()) as SystemBarImpl
-                synchronized(activitySystemBar) {
+                synchronized(SystemBarImpl::class) {
                     val statusBar = LifeCycleBar(
                         fragment,
                         fragment.requireActivity(),
@@ -79,10 +79,6 @@ internal class SystemBarFactory private constructor() {
             } else {
                 create(owner as FragmentActivity)
             }
-        }
-
-        fun findStatusBar(owner: LifecycleOwner): LifeCycleBar? {
-            return factory.map[owner.hashCode()] as? LifeCycleBar
         }
 
         /**

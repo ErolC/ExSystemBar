@@ -2,6 +2,7 @@ package com.erolc.exbar.bar
 
 
 import android.app.Activity
+import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -17,7 +18,6 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
-import androidx.core.graphics.Insets
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -39,37 +39,23 @@ internal class StatusBarImpl(
     private val activity: ComponentActivity
 ) : Bar {
     private val STATUS_BAR = "statusBar"
-    private val STATUS_BAR_BG = "statusBarBg"
     private var systemBar: SystemBarImpl? = null
 
     private val insetsController =
         WindowCompat.getInsetsController(activity.window, activity.window.decorView)
 
-
     private var statusBar: View?
     private var offset = 0
-    private var bottom = 0
+    private var isInvasion = false
+
 
     init {
         /**
          * 得到内容中状态栏部分view，由于这个view是我自己设置的，所以不一定存在，
          */
-//        initBg()
         statusBar = activity.contentView.findViewWithTag(STATUS_BAR)
             ?: activity.getStatusBarView()//通过一开始就使用自定义状态栏解决在运行时第一次使用的时候会出现布局底部留空
-
-//        activity.contentView.viewTreeObserver.addOnGlobalLayoutListener {
-//            if (activity.window.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)) {
-//                val r = Rect()
-//                activity.contentView.getWindowVisibleDisplayFrame(r)
-//                if (bottom == 0) {
-//                    bottom = r.bottom
-//                }else{
-//                    offset = bottom-r.bottom
-//                    updateStatus()
-//                }
-//            }
-//        }
+        setBackgroundColor(activity.defStatusBarColor)
     }
 
     /**
@@ -97,34 +83,11 @@ internal class StatusBarImpl(
      * 默认的状态栏颜色
      */
     private val Activity.defStatusBarColor: Int
-        get() = ContextCompat.getColor(this, R.color.colorPrimary)
-
-
-    /**
-     * 该背景解决显示系统状态栏的时候会出现白底的现象
-     * 以下四个方法都是
-     */
-    @Deprecated("")
-    private fun initBg() {
-        val view = View(activity)
-        view.tag = STATUS_BAR_BG
-        view.setBackgroundColor(activity.defStatusBarColor)
-        activity.contentView.addView(view)
-        val layoutParams = view.layoutParams as FrameLayout.LayoutParams
-        layoutParams.height = getHeight()
-        layoutParams.topMargin = getHeight()
-        view.layoutParams = layoutParams
-    }
-
-    private fun hideStatusBg() {
-        val view = activity.contentView.findViewWithTag<View>(STATUS_BAR_BG)
-        view?.visibility = GONE
-    }
-
-    private fun showStatusBg() {
-        val view = activity.contentView.findViewWithTag<View>(STATUS_BAR_BG)
-        view?.visibility = VISIBLE
-    }
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor
+        } else {
+            ContextCompat.getColor(this, R.color.colorPrimaryDark)
+        }
 
     /**
      * 得到内容部分view
@@ -136,11 +99,6 @@ internal class StatusBarImpl(
      */
     private fun isLightColor(color: Int) = ColorUtils.calculateLuminance(color) >= 0.5
 
-//    internal fun updateBar(inset: Insets) {
-//        insets = inset
-//        activity.updateLayout()
-//        updateStatus()
-//    }
 
     fun View.computeVisibleDisplayHeight(): Int {
         val r = Rect()
@@ -175,6 +133,7 @@ internal class StatusBarImpl(
             } else {
                 topMargin = -activity.contentView.paddingTop
             }
+            loge("update ${-activity.contentView.paddingTop} + $isInvasion")
         }
     }
 
@@ -198,7 +157,6 @@ internal class StatusBarImpl(
                     TypedValue.complexToDimensionPixelSize(value.data, resources.displayMetrics)
                 else
                     0
-            log("the statusBar height is $height")
             height
         }
 
@@ -218,7 +176,6 @@ internal class StatusBarImpl(
             if (isShowStatusBar) getHeight() else 0//当标题栏不存在的时候，只需要考虑状态栏的高度
         }
     }
-
 
     /**
      * 让系统的状态栏背景消失，计算一些数值
@@ -263,15 +220,29 @@ internal class StatusBarImpl(
         return statusBarTextColorIsDark
     }
 
-    override fun recovery() {
-        setBackgroundColor(activity.defStatusBarColor)
+    override fun onConfigurationChanged() {
+
     }
+
+//    override fun recovery() {
+//        setBackgroundColor(activity.defStatusBarColor)
+//    }
 
 
     override fun getHeight(): Int {
-        val identifier = activity.resources.getIdentifier("status_bar_height", "dimen", "android")
-        val i = if (identifier > 0) activity.resources.getDimensionPixelSize(identifier) else 0
-        return i
+        if (isInvasion) {
+            return 0
+        }
+        return getHeight(activity)
+    }
+
+    companion object {
+        internal fun getHeight(activity: Activity): Int {
+            val identifier =
+                activity.resources.getIdentifier("status_bar_height", "dimen", "android")
+            val i = if (identifier > 0) activity.resources.getDimensionPixelSize(identifier) else 0
+            return i
+        }
     }
 
     override fun getBackgroundColor(): Int {
@@ -287,7 +258,6 @@ internal class StatusBarImpl(
         setBackground(ContextCompat.getDrawable(activity, drawable))
 
     override fun setBackground(drawable: Drawable?) {
-        show()
         activity.getStatusBarView().background = drawable
         if (drawable is ColorDrawable) {
             val lightColor = isLightColor(drawable.color)
@@ -297,6 +267,10 @@ internal class StatusBarImpl(
 
     override fun getBackground(): Drawable? {
         return findStatusBar()?.background
+    }
+
+    override fun getDefaultBackgroundColor(): Int {
+        return activity.defStatusBarColor
     }
 
     /**
@@ -313,10 +287,19 @@ internal class StatusBarImpl(
         insetsController?.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         insetsController?.hide(WindowInsetsCompat.Type.statusBars())
-        adapterBang(isAdapterBang)
-        findStatusBar()?.visibility = GONE
+        val hasNotchInScreen = hasNotchInScreen(activity)
+        if (hasNotchInScreen) {
+            adapterBang(true)
+            if (isAdapterBang)
+                findStatusBar()?.visibility = GONE
+            else {
+                setBackground(ColorDrawable(Color.BLACK))
+            }
+        } else {
+            adapterBang(isAdapterBang)
+            findStatusBar()?.visibility = GONE
+        }
         activity.updateLayout()
-
     }
 
     override fun show() {
@@ -329,8 +312,16 @@ internal class StatusBarImpl(
      * 入侵
      */
     override fun invasion() {
-        activity.contentView.post {
-            activity.updateLayout(0)
-        }
+        isInvasion = true
+        activity.updateLayout(0)
+    }
+
+    override fun isInvasion(): Boolean {
+        return isInvasion
+    }
+
+    override fun unInvasion() {
+        isInvasion = false
+        activity.updateLayout()
     }
 }

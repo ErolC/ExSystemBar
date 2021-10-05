@@ -1,5 +1,6 @@
 package com.erolc.statusbarcontrol
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -10,26 +11,27 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.erolc.exbar.*
+import com.erolc.exbar.systemBar.SystemBar
 import com.erolc.statusbarcontrol.databinding.FragmentTestBinding
 
 class TestFragment : Fragment() {
-    private val statusBar by navigationBar {
+    private val statusBar by statusBar {
         binding!!.desc.text = "状态栏是黑色"
-        when (index) {
-            0 -> {
-//                val parseColor = Color.parseColor("#003322")
+//        when (index) {
+//            0 -> {
+//                val parseColor = Color.parseColor("#000fff")
 //                setBackgroundColor(parseColor)
 //                binding!!.desc.text = "状态栏是蓝色"
-            }
-            1 -> {
-                setBackgroundColor(Color.RED)
-                binding!!.desc.text = "状态栏是红色"
-            }
-            else -> {
-                setBackgroundColor(Color.YELLOW)
-                binding!!.desc.text = "状态栏是黄色"
-            }
-        }
+//            }
+//            1 -> {
+//                setBackgroundColor(Color.RED)
+//                binding!!.desc.text = "状态栏是红色"
+//            }
+//            else -> {
+//                setBackgroundColor(Color.YELLOW)
+//                binding!!.desc.text = "状态栏是黄色"
+//            }
+//        }
     }
     private var index = 0
     private var binding: FragmentTestBinding? = null
@@ -45,6 +47,10 @@ class TestFragment : Fragment() {
         }
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,6 +60,8 @@ class TestFragment : Fragment() {
         index = arguments?.getInt("index") ?: 0
         binding = FragmentTestBinding.inflate(inflater, container, false)
         binding!!.clickHandler = ClickHandler()
+//        val bar = ExSystemBar.create(this).getBar(SystemBar.NAVIGATION_BAR)
+//        Log.e("TAG", "onCreateView:  $bar  -- $statusBar" )
         return binding!!.root
     }
 
@@ -65,7 +73,7 @@ class TestFragment : Fragment() {
 
     inner class ClickHandler {
         fun hide(view: View) {
-            statusBar.hide()
+            statusBar.hide(true)
         }
 
         fun show(view: View) {
