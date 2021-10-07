@@ -220,10 +220,6 @@ internal class StatusBarImpl(
         return statusBarTextColorIsDark
     }
 
-    override fun onConfigurationChanged() {
-
-    }
-
 //    override fun recovery() {
 //        setBackgroundColor(activity.defStatusBarColor)
 //    }

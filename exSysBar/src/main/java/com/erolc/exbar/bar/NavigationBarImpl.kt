@@ -219,7 +219,4 @@ class NavigationBarImpl(
     override fun getContentIsDark(): Boolean {
         return insetsController?.isAppearanceLightNavigationBars ?: false
     }
-
-    override fun onConfigurationChanged() {
-    }
 }

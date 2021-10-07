@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".TestActivity" />
-        <activity android:name=".NavTestActivity"  android:configChanges="orientation|screenSize"/>
+        <activity android:name=".NavTestActivity" android:configChanges="orientation|screenSize"/>
     </application>
 
 </manifest>

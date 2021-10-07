@@ -124,11 +124,6 @@ class SystemBarImpl(
         statusBar.show()
     }
 
-    override fun onConfigurationChanged() {
-        statusBar.restore()
-        navigationBar.restore()
-    }
-
     private fun imeAnim(activity: Activity) {
         if (activity.window.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)) {
             ViewCompat.setOnApplyWindowInsetsListener(activity.contentView,

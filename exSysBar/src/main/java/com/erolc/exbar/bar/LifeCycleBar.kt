@@ -176,10 +176,6 @@ class LifeCycleBar(
         }
     }
 
-    override fun onConfigurationChanged() {
-        restore()
-    }
-
     //适配懒加载
     fun setUserVisibleHint(visibleHint: Boolean) {
         isSetUserVisibleHint = visibleHint
