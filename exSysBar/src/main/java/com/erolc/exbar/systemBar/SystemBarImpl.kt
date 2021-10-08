@@ -59,7 +59,6 @@ class SystemBarImpl(
                 else -> {
                     if (paddingBottom != 0) {
                         paddingBottom = defaultValue
-                        loge("default")
                     } else {
                         paddingRight = defaultValue
                     }

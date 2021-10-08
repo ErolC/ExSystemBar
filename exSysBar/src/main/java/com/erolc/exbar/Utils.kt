@@ -6,6 +6,7 @@ import android.os.Build
 import android.view.DisplayCutout
 import android.view.View
 import android.view.Window
+import androidx.core.view.WindowInsetsCompat
 import java.lang.Exception
 import java.lang.reflect.Method
 
@@ -33,10 +34,9 @@ fun View.computeVisibleDisplayHeight(): Int {
  * @return
  */
 fun hasNotchInScreen(activity: Activity): Boolean {
-
     // android  P 以上有标准 API 来判断是否有刘海屏
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        val displayCutout: DisplayCutout? = activity.window.decorView.rootWindowInsets.displayCutout
+        val displayCutout: DisplayCutout? = activity.window.decorView.rootWindowInsets?.displayCutout
         if (displayCutout != null) {
             // 说明有刘海屏
             return true
