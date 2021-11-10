@@ -154,6 +154,10 @@ class NavigationBarImpl(
         return _height ?: defHeight
     }
 
+    override fun getInherentHeight(): Int {
+        return defHeight
+    }
+
     override fun getBackgroundColor(): Int {
         val background = activity.getNavBarView().background//自定义的状态栏背景颜色
         return if (background is ColorDrawable) background.color else -1//如果这个背景不是颜色，（自定义状态栏的背景可以是drawable），则返回-1

@@ -232,6 +232,10 @@ internal class StatusBarImpl(
         return getHeight(activity)
     }
 
+    override fun getInherentHeight(): Int {
+        return Companion.getHeight(activity)
+    }
+
     companion object {
         internal fun getHeight(activity: Activity): Int {
             val identifier =

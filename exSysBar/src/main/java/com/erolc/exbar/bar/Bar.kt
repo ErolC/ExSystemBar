@@ -9,9 +9,14 @@ import androidx.annotation.DrawableRes
  */
 interface Bar {
     /**
-     * 栏的高度
+     * 栏的当前高度，会随着栏的隐藏而改变（所以该方法的值只有0和[getInherentHeight]）
      */
     fun getHeight(): Int
+
+    /**
+     * 栏固有高度
+     */
+    fun getInherentHeight():Int
 
     /**
      * 栏的背景色，如果状态栏的背景并非颜色，那么将返回-1
