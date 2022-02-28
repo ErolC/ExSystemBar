@@ -24,19 +24,17 @@ import com.erolc.statusbarcontrol.databinding.ActivityMainBinding
  */
 class MainActivity : AppCompatActivity() {
 
+    val systemBar by navigationBar {
+
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding =
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-//        ViewCompat.setOnApplyWindowInsetsListener(binding.root){view,insets->
-//            val inset = insets.getInsets(WindowInsetsCompat.Type.ime())
-//            val height = contentView.computeVisibleDisplayHeight()
-//            Log.e("TAG", "onCreate: $inset  -- $height" )
-//            insets
-//        }
-//        window.statusBarColor = Color.BLUE
-//        statusBar.invasion()
+        binding.text.text = "height:${systemBar.getHeight()}"
+
     }
 
     fun next(view: View) {
@@ -45,41 +43,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun hide(view: View) {
-//        statusBar.hide()
+        systemBar.hide()
 
     }
 
     fun show(view: View) {
-//        statusBar.show()
-
-
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        Log.e("TAG", "onConfigurationChanged: ")
+        systemBar.show()
     }
 
     fun showRedColor(view: View) {
-//        statusBar.setBackgroundColor(Color.RED)
+        systemBar.setBackgroundColor(Color.RED)
     }
 
     fun showWithDrawable(view: View) {
-//        statusBar.setBackground(R.drawable.status_bar_bg)
+        systemBar.setBackgroundColor(Color.BLACK)
     }
 
     fun getStatusBarHeight(view: View) {
-//        showToast(statusBar.getHeight())
+        showToast(systemBar.getHeight())
     }
 
     fun switchTextColor(view: View) {
-//        val textColorIsDark = statusBar.getContentIsDark()
-//        Log.e("TAG", "switchTextColor: $textColorIsDark")
-//        statusBar.setContentColor(!textColorIsDark)
+        val textColorIsDark = systemBar.getContentIsDark()
+        systemBar.setContentColor(!textColorIsDark)
     }
 
     fun immersive(view: View) {
-//        statusBar.invasion()
+        if (systemBar.isInvasion()) {
+            systemBar.unInvasion()
+        }else{
+            systemBar.invasion()
+        }
     }
 
 }

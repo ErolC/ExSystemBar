@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.Insets
 import androidx.core.view.*
+import com.erolc.exbar.getWindowInsetsController
 import com.erolc.exbar.loge
 import com.erolc.exbar.systemBar.SystemBarImpl
 
@@ -27,8 +28,8 @@ class NavigationBarImpl(
     private val NAV_BAR_BG = "navBarBg"
     private var navBar: View? = null
     private var _height: Int? = null
-    private val insetsController =
-        WindowCompat.getInsetsController(activity.window, activity.window.decorView)
+    val controller by lazy { activity.getWindowInsetsController() }
+
     private var systemBar: SystemBarImpl? = null
     private var lastOrientation = activity.resources.configuration.orientation
     private var inset: Insets? = null
@@ -184,20 +185,19 @@ class NavigationBarImpl(
     }
 
     override fun setContentColor(isDark: Boolean) {
-        loge("isDark $isDark controller $insetsController")
-        insetsController?.isAppearanceLightNavigationBars = isDark
+        controller?.isAppearanceLightNavigationBars = isDark
     }
 
     override fun hide(isAdapterBang: Boolean) {
-//        insetsController?.systemBarsBehavior =
+//        controller?.systemBarsBehavior =
 //            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        insetsController?.hide(WindowInsetsCompat.Type.navigationBars())
+        controller?.hide(WindowInsetsCompat.Type.navigationBars())
         findNavBar()?.visibility = View.GONE
         activity.updateLayout()
     }
 
     override fun show() {
-        insetsController?.show(WindowInsetsCompat.Type.navigationBars())
+        controller?.show(WindowInsetsCompat.Type.navigationBars())
         findNavBar()?.visibility = View.VISIBLE
         activity.updateLayout()
     }
@@ -221,6 +221,6 @@ class NavigationBarImpl(
     }
 
     override fun getContentIsDark(): Boolean {
-        return insetsController?.isAppearanceLightNavigationBars ?: false
+        return controller?.isAppearanceLightNavigationBars ?: false
     }
 }

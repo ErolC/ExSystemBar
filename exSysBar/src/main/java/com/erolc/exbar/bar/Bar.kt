@@ -46,7 +46,7 @@ interface Bar {
     fun getDefaultBackgroundColor(): Int
 
     /**
-     * 设置状态栏内容是否是暗系
+     * 设置栏内容是否是暗系
      * @param isDark true-黑色，false-白色
      */
     fun setContentColor(isDark: Boolean)

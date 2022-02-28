@@ -11,6 +11,7 @@
             android:layout_width="match_parent"
             android:background="#257CFD"
             android:layout_height="match_parent"
+            android:paddingBottom="100dp"
             tools:context=".MainActivity">
 
         <TextView
@@ -40,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-        <EditText
+        <Button
                 android:id="@+id/showColor"
                 android:onClick="showRedColor"
                 app:layout_constraintBottom_toTopOf="@id/show"

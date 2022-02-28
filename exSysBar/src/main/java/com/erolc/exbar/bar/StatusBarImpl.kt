@@ -48,6 +48,9 @@ internal class StatusBarImpl(
     private var offset = 0
     private var isInvasion = false
 
+    private var hasNotchInScreen: Boolean? = null
+    private var isAdapterBang: Boolean? = null
+
 
     init {
         /**
@@ -56,6 +59,14 @@ internal class StatusBarImpl(
         statusBar = activity.contentView.findViewWithTag(STATUS_BAR)
             ?: activity.getStatusBarView()//通过一开始就使用自定义状态栏解决在运行时第一次使用的时候会出现布局底部留空
         setBackgroundColor(activity.defStatusBarColor)
+        DisplayCutoutHandler.hasNotchInScreen {
+            hasNotchInScreen = it
+            if (isAdapterBang != null) {
+                hide(isAdapterBang == true)
+                isAdapterBang = null
+            }
+        }
+
     }
 
     /**
@@ -128,12 +139,11 @@ internal class StatusBarImpl(
             height = getHeight()//设置自定义状态栏高度
             val hasSoftMode =
                 activity.window.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-            if (hasSoftMode) {
-                topMargin = -activity.contentView.paddingTop + offset
+            topMargin = if (hasSoftMode) {
+                -activity.contentView.paddingTop + offset
             } else {
-                topMargin = -activity.contentView.paddingTop
+                -activity.contentView.paddingTop
             }
-            loge("update ${-activity.contentView.paddingTop} + $isInvasion")
         }
     }
 
@@ -220,11 +230,6 @@ internal class StatusBarImpl(
         return statusBarTextColorIsDark
     }
 
-//    override fun recovery() {
-//        setBackgroundColor(activity.defStatusBarColor)
-//    }
-
-
     override fun getHeight(): Int {
         if (isInvasion) {
             return 0
@@ -287,12 +292,17 @@ internal class StatusBarImpl(
         insetsController?.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         insetsController?.hide(WindowInsetsCompat.Type.statusBars())
-        val hasNotchInScreen = hasNotchInScreen(activity)
-        if (hasNotchInScreen) {
+        //一个保险机制，当检测是否存在刘海比该方法晚时，需要将isAdapterBang存起来，在检测是否存在刘海完成时再次调用该方法
+        if (hasNotchInScreen == null) {
+            this.isAdapterBang = isAdapterBang
+            return
+        }
+
+        if (hasNotchInScreen == true) {
             adapterBang(true)
-            if (isAdapterBang)
+            if (isAdapterBang) {
                 findStatusBar()?.visibility = GONE
-            else {
+            } else {
                 setBackground(ColorDrawable(Color.BLACK))
             }
         } else {

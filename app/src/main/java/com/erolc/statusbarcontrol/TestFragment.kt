@@ -15,23 +15,10 @@ import com.erolc.exbar.systemBar.SystemBar
 import com.erolc.statusbarcontrol.databinding.FragmentTestBinding
 
 class TestFragment : Fragment() {
-    private val statusBar by statusBar {
+    private val statusBar by systemBar {
         binding!!.desc.text = "状态栏是黑色"
-//        when (index) {
-//            0 -> {
-//                val parseColor = Color.parseColor("#000fff")
-//                setBackgroundColor(parseColor)
-//                binding!!.desc.text = "状态栏是蓝色"
-//            }
-//            1 -> {
-//                setBackgroundColor(Color.RED)
-//                binding!!.desc.text = "状态栏是红色"
-//            }
-//            else -> {
-//                setBackgroundColor(Color.YELLOW)
-//                binding!!.desc.text = "状态栏是黄色"
-//            }
-//        }
+        fullScreen()
+
     }
     private var index = 0
     private var binding: FragmentTestBinding? = null
@@ -73,7 +60,7 @@ class TestFragment : Fragment() {
 
     inner class ClickHandler {
         fun hide(view: View) {
-            statusBar.hide(true)
+//            statusBar.hide(true)
         }
 
         fun show(view: View) {
@@ -107,7 +94,7 @@ class TestFragment : Fragment() {
         }
 
         fun immersive(view: View) {
-            statusBar.invasion()
+//            statusBar.invasion()
         }
 
         fun randomColor(): Int {

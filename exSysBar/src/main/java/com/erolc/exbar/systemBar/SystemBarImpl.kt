@@ -1,6 +1,7 @@
 package com.erolc.exbar.systemBar
 
 import android.app.Activity
+import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -31,18 +32,17 @@ class SystemBarImpl(
         WindowCompat.setDecorFitsSystemWindows(activity.window, false)
 
 //        //将状态栏和背景栏变透明
-        ViewCompat.setOnApplyWindowInsetsListener(activity.window.decorView) { v, insets ->
+        activity.contentView.applyWindowInsetsListener { view, insets ->
+            DisplayCutoutHandler.checkHasNotchInScreen(activity)
             val nBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val navBar = navigationBar.exeBar as NavigationBarImpl
             navBar.updateBar(nBar)
-            insets
         }
-//        imeAnim(activity)
+//        activity.window.navigationBarColor = Color.TRANSPARENT
         statusBar.setSystemBar(this)
         navigationBar.setSystemBar(this)
     }
 
-    private val Activity.contentView get() = window.decorView.findViewById<FrameLayout>(Window.ID_ANDROID_CONTENT)
 
     fun updateLayout(activity: Activity, defaultValue: Int, type: Int) {
         val statusBar = statusBar.exeBar as StatusBarImpl
@@ -121,41 +121,5 @@ class SystemBarImpl(
     override fun show() {
         navigationBar.show()
         statusBar.show()
-    }
-
-    private fun imeAnim(activity: Activity) {
-        if (activity.window.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)) {
-            ViewCompat.setOnApplyWindowInsetsListener(activity.contentView,
-                object : OnApplyWindowInsetsListener {
-                    private var isChange = false
-                    private var isFirst = true
-
-                    override fun onApplyWindowInsets(
-                        view: View,
-                        insets: WindowInsetsCompat
-                    ): WindowInsetsCompat {
-                        val isVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
-                        if (!ExSystemBar.adapterIme) {
-                            return insets
-                        }
-                        if (isFirst) {
-                            view.viewTreeObserver.addOnGlobalLayoutListener {
-                                if (isFirst) {
-                                    view.updateLayoutParams { height = view.measuredHeight }
-                                    isFirst = false
-                                }
-                            }
-                        }
-
-                        if (isChange != isVisible) {
-                            val contentHeight = view.computeVisibleDisplayHeight()
-                            view.heightAnim(contentHeight, 100)
-                            isChange = isVisible
-                        }
-                        return insets
-                    }
-                })
-        }
-
     }
 }
