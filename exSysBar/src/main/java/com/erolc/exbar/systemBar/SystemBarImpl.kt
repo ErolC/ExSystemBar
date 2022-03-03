@@ -32,13 +32,12 @@ class SystemBarImpl(
         WindowCompat.setDecorFitsSystemWindows(activity.window, false)
 
 //        //将状态栏和背景栏变透明
-        activity.contentView.applyWindowInsetsListener { view, insets ->
+        activity.window.decorView.applyWindowInsetsListener { view, insets ->
             DisplayCutoutHandler.checkHasNotchInScreen(activity)
             val nBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val navBar = navigationBar.exeBar as NavigationBarImpl
             navBar.updateBar(nBar)
         }
-//        activity.window.navigationBarColor = Color.TRANSPARENT
         statusBar.setSystemBar(this)
         navigationBar.setSystemBar(this)
     }
