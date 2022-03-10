@@ -13,17 +13,18 @@ import androidx.lifecycle.LifecycleOwner
 import com.erolc.exbar.SystemBarFactory
 import com.erolc.exbar.loge
 import com.erolc.exbar.systemBar.SystemBarImpl
+import java.lang.ref.SoftReference
 
 /**
  * 这是所有界面的Bar的对象，无论是Activity还是Fragment
  */
 class LifeCycleBar(
     owner: LifecycleOwner,
-    val context: Context,
+    context: Context,
     private val bar: Bar
 ) : Bar by bar {
     private val TAG = "ExStatusBar"
-
+    private val softReference = SoftReference(context)
     private var drawable: Drawable? = ColorDrawable(bar.getDefaultBackgroundColor())
     private var contentColorIsDark: Boolean? = bar.getContentIsDark()
     private var isHide: Int = 3
@@ -83,7 +84,7 @@ class LifeCycleBar(
 
 
     override fun setBackground(drawable: Int) {
-        this.drawable = ContextCompat.getDrawable(context, drawable)
+        this.drawable = softReference.get()?.let { ContextCompat.getDrawable(it, drawable) }
         canSet {
             exeBar.setBackground(drawable)
         }
@@ -184,5 +185,7 @@ class LifeCycleBar(
         }
     }
 
+    fun release(){
+    }
 
 }

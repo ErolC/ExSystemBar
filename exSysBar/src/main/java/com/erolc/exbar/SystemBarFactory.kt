@@ -85,7 +85,8 @@ internal class SystemBarFactory private constructor() {
          * 清除特定的状态栏对象
          */
         fun clear(hashCode: Int) {
-            factory.map.remove(hashCode)
+            val systemBar = factory.map.remove(hashCode) as? SystemBarImpl
+            systemBar?.release()
         }
     }
 }

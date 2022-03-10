@@ -15,21 +15,21 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.Insets
 import androidx.core.view.*
 import com.erolc.exbar.getWindowInsetsController
-import com.erolc.exbar.loge
 import com.erolc.exbar.systemBar.SystemBarImpl
+import java.lang.ref.SoftReference
 
 /**
  * create by erolc at 2021/9/3 17:03.
  */
 class NavigationBarImpl(
-    private val activity: ComponentActivity
+    activity: ComponentActivity
 ) : Bar {
     private val NAV_BAR = "navBar"
     private val NAV_BAR_BG = "navBarBg"
     private var navBar: View? = null
     private var _height: Int? = null
     val controller by lazy { activity.getWindowInsetsController() }
-
+    private val softReference = SoftReference(activity)
     private var systemBar: SystemBarImpl? = null
     private var lastOrientation = activity.resources.configuration.orientation
     private var inset: Insets? = null
@@ -44,12 +44,12 @@ class NavigationBarImpl(
 
     internal fun setSystemBar(systemBar: SystemBarImpl) {
         this.systemBar = systemBar
-        navBar = activity.getNavBarView()
+        navBar = softReference.get()?.getNavBarView()
     }
 
     internal fun updateBar(inset: Insets) {
         this.inset = inset
-        activity.updateLayout()
+        softReference.get()?.updateLayout()
         updateNav()
     }
 
@@ -84,7 +84,7 @@ class NavigationBarImpl(
                 }
                 width = if (right == 0) FrameLayout.LayoutParams.MATCH_PARENT else {
                     gravity = Gravity.END
-                    topMargin = -StatusBarImpl.getHeight(activity)
+                    topMargin = -StatusBarImpl.getHeight(softReference.get())
                     rightMargin = -right
                     right
                 }
@@ -120,7 +120,7 @@ class NavigationBarImpl(
      * 而这个方法是寻找状态栏，如果没有自定义，那么就返回null
      */
     private fun findNavBar(): View? {
-        return navBar ?: activity.contentView.findViewWithTag(NAV_BAR)
+        return navBar ?: softReference.get()?.contentView?.findViewWithTag(NAV_BAR)
     }
 
     /**
@@ -146,8 +146,14 @@ class NavigationBarImpl(
     private val defHeight: Int
         get() {
             val identifier =
-                activity.resources.getIdentifier("navigation_bar_height", "dimen", "android")
-            return if (identifier > 0) activity.resources.getDimensionPixelSize(identifier) else 0
+                softReference.get()?.resources?.getIdentifier(
+                    "navigation_bar_height",
+                    "dimen",
+                    "android"
+                ) ?: 0
+            return if (identifier > 0) softReference.get()?.resources?.getDimensionPixelSize(
+                identifier
+            ) ?: 0 else 0
         }
 
 
@@ -160,16 +166,19 @@ class NavigationBarImpl(
     }
 
     override fun getBackgroundColor(): Int {
-        val background = activity.getNavBarView().background//自定义的状态栏背景颜色
+        val background = softReference.get()?.getNavBarView()?.background//自定义的状态栏背景颜色
         return if (background is ColorDrawable) background.color else -1//如果这个背景不是颜色，（自定义状态栏的背景可以是drawable），则返回-1
     }
 
     override fun setBackgroundColor(color: Int) = setBackground(ColorDrawable(color))
-    override fun setBackground(drawable: Int) =
-        setBackground(ContextCompat.getDrawable(activity, drawable))
+    override fun setBackground(drawable: Int) {
+        softReference.get()?.let {
+            setBackground(ContextCompat.getDrawable(it, drawable))
+        }
+    }
 
     override fun setBackground(drawable: Drawable?) {
-        activity.getNavBarView().background = drawable
+        softReference.get()?.getNavBarView()?.background = drawable
         if (drawable is ColorDrawable) {
             val lightColor = isLightColor(drawable.color)
             setContentColor(lightColor)//设置自定义状态栏的字体颜色
@@ -181,7 +190,7 @@ class NavigationBarImpl(
     }
 
     override fun getDefaultBackgroundColor(): Int {
-        return activity.defNavBarColor
+        return softReference.get()?.defNavBarColor ?: Color.TRANSPARENT
     }
 
     override fun setContentColor(isDark: Boolean) {
@@ -193,18 +202,18 @@ class NavigationBarImpl(
 //            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         controller?.hide(WindowInsetsCompat.Type.navigationBars())
         findNavBar()?.visibility = View.GONE
-        activity.updateLayout()
+        softReference.get()?.updateLayout()
     }
 
     override fun show() {
         controller?.show(WindowInsetsCompat.Type.navigationBars())
         findNavBar()?.visibility = View.VISIBLE
-        activity.updateLayout()
+        softReference.get()?.updateLayout()
     }
 
     override fun invasion() {
         isInvasion = true
-        activity.updateLayout(0)
+        softReference.get()?.updateLayout(0)
     }
 
     override fun isInvasion(): Boolean {
@@ -213,7 +222,7 @@ class NavigationBarImpl(
 
     override fun unInvasion() {
         isInvasion = false
-        activity.updateLayout()
+        softReference.get()?.updateLayout()
     }
 
     override fun isShow(): Boolean {
@@ -224,3 +233,5 @@ class NavigationBarImpl(
         return controller?.isAppearanceLightNavigationBars ?: false
     }
 }
+
+

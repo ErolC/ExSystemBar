@@ -26,8 +26,7 @@ import com.erolc.exbar.*
 import com.erolc.exbar.log
 import com.erolc.exbar.loge
 import com.erolc.exbar.systemBar.SystemBarImpl
-
-
+import java.lang.ref.SoftReference
 /**
  *
  * @author erolc 28/10/2020
@@ -36,10 +35,11 @@ import com.erolc.exbar.systemBar.SystemBarImpl
  */
 
 internal class StatusBarImpl(
-    private val activity: ComponentActivity
+    activity: ComponentActivity
 ) : Bar {
     private val STATUS_BAR = "statusBar"
     private var systemBar: SystemBarImpl? = null
+    private val softReference = SoftReference(activity)
 
     private val insetsController =
         WindowCompat.getInsetsController(activity.window, activity.window.decorView)
@@ -59,7 +59,7 @@ internal class StatusBarImpl(
         statusBar = activity.contentView.findViewWithTag(STATUS_BAR)
             ?: activity.getStatusBarView()//通过一开始就使用自定义状态栏解决在运行时第一次使用的时候会出现布局底部留空
         setBackgroundColor(activity.defStatusBarColor)
-        DisplayCutoutHandler.hasNotchInScreen {
+        DisplayCutoutHandler().hasNotchInScreen {
             hasNotchInScreen = it
             if (isAdapterBang != null) {
                 hide(isAdapterBang == true)
@@ -74,20 +74,20 @@ internal class StatusBarImpl(
      */
     private fun adapterBang(isAdapterBang: Boolean = true) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val lp: WindowManager.LayoutParams = activity.window.attributes
-            lp.layoutInDisplayCutoutMode = if (isAdapterBang) {
+            val lp: WindowManager.LayoutParams? = softReference.get()?.window?.attributes
+            lp?.layoutInDisplayCutoutMode = if (isAdapterBang) {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             } else {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
             }
 
-            activity.window.attributes = lp
+            softReference.get()?.window?.attributes = lp
         }
     }
 
     internal fun setSystemBar(systemBar: SystemBarImpl) {
         this.systemBar = systemBar
-        statusBar = activity.getStatusBarView()
+        statusBar = softReference.get()?.getStatusBarView()
     }
 
     /**
@@ -138,11 +138,11 @@ internal class StatusBarImpl(
         findStatusBar()?.updateLayoutParams<FrameLayout.LayoutParams> {
             height = getHeight()//设置自定义状态栏高度
             val hasSoftMode =
-                activity.window.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-            topMargin = if (hasSoftMode) {
-                -activity.contentView.paddingTop + offset
+                softReference.get()?.window?.containSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+            topMargin = if (hasSoftMode == true) {
+                -(softReference.get()?.contentView?.paddingTop?:0) + offset
             } else {
-                -activity.contentView.paddingTop
+                -(softReference.get()?.contentView?.paddingTop?:0)
             }
         }
     }
@@ -152,7 +152,7 @@ internal class StatusBarImpl(
      * 而这个方法是寻找状态栏，如果没有自定义，那么就返回null
      */
     private fun findStatusBar(): View? {
-        return statusBar ?: activity.contentView.findViewWithTag(STATUS_BAR)
+        return statusBar ?: softReference.get()?.contentView?.findViewWithTag(STATUS_BAR)
     }
 
 
@@ -178,10 +178,10 @@ internal class StatusBarImpl(
 
     internal fun getLayoutValue(): Int {
         val findViewById =
-            activity.window.decorView.findViewById<View>(R.id.action_mode_bar_stub)//这个view在标题栏存在时，不存在，
+            softReference.get()?.window?.decorView?.findViewById<View>(R.id.action_mode_bar_stub)//这个view在标题栏存在时，不存在，
         //计算并得到标题栏存在或者不存在的时候的上内边距
         return if (findViewById == null || findViewById.visibility != GONE) {//表明标题栏存在
-            activity.actionBarHeight + if (isShowStatusBar) getHeight() else 0//当标题栏存在的时候，上内边距就需要包括标题栏的高度，以及自定义的状态栏的高度，当然前提是这个状态栏存在
+            softReference.get()?.actionBarHeight?:0 + if (isShowStatusBar) getHeight() else 0//当标题栏存在的时候，上内边距就需要包括标题栏的高度，以及自定义的状态栏的高度，当然前提是这个状态栏存在
         } else {
             if (isShowStatusBar) getHeight() else 0//当标题栏不存在的时候，只需要考虑状态栏的高度
         }
@@ -207,7 +207,7 @@ internal class StatusBarImpl(
     private fun clearStatusBar() {
         findStatusBar()?.apply {
             background = null
-            activity.contentView.removeView(this)
+            softReference.get()?.contentView?.removeView(this)
             statusBar = null
         }
     }
@@ -234,24 +234,24 @@ internal class StatusBarImpl(
         if (isInvasion) {
             return 0
         }
-        return getHeight(activity)
+        return getHeight(softReference.get())
     }
 
     override fun getInherentHeight(): Int {
-        return Companion.getHeight(activity)
+        return Companion.getHeight(softReference.get())
     }
 
     companion object {
-        internal fun getHeight(activity: Activity): Int {
+        internal fun getHeight(activity: Activity?): Int {
             val identifier =
-                activity.resources.getIdentifier("status_bar_height", "dimen", "android")
-            val i = if (identifier > 0) activity.resources.getDimensionPixelSize(identifier) else 0
+                activity?.resources?.getIdentifier("status_bar_height", "dimen", "android")?:0
+            val i = if (identifier > 0) activity?.resources?.getDimensionPixelSize(identifier)?:0 else 0
             return i
         }
     }
 
     override fun getBackgroundColor(): Int {
-        val background = activity.getStatusBarView().background//自定义的状态栏背景颜色
+        val background = softReference.get()?.getStatusBarView()?.background//自定义的状态栏背景颜色
         return if (background is ColorDrawable) background.color else -1//如果这个背景不是颜色，（自定义状态栏的背景可以是drawable），则返回-1
     }
 
@@ -259,11 +259,14 @@ internal class StatusBarImpl(
      * 设置背景
      */
     override fun setBackgroundColor(color: Int) = setBackground(ColorDrawable(color))
-    override fun setBackground(@DrawableRes drawable: Int) =
-        setBackground(ContextCompat.getDrawable(activity, drawable))
+    override fun setBackground(@DrawableRes drawable: Int){
+        softReference.get()?.apply {
+            setBackground(ContextCompat.getDrawable(this, drawable))
+        }
+    }
 
     override fun setBackground(drawable: Drawable?) {
-        activity.getStatusBarView().background = drawable
+        softReference.get()?.getStatusBarView()?.background = drawable
         if (drawable is ColorDrawable) {
             val lightColor = isLightColor(drawable.color)
             setContentColor(lightColor)//设置自定义状态栏的字体颜色
@@ -275,7 +278,7 @@ internal class StatusBarImpl(
     }
 
     override fun getDefaultBackgroundColor(): Int {
-        return activity.defStatusBarColor
+        return softReference.get()?.defStatusBarColor?:Color.TRANSPARENT
     }
 
     /**
@@ -309,13 +312,13 @@ internal class StatusBarImpl(
             adapterBang(isAdapterBang)
             findStatusBar()?.visibility = GONE
         }
-        activity.updateLayout()
+        softReference.get()?.updateLayout()
     }
 
     override fun show() {
         insetsController?.show(WindowInsetsCompat.Type.statusBars())
         findStatusBar()?.visibility = VISIBLE
-        activity.updateLayout()
+        softReference.get()?.updateLayout()
     }
 
     /**
@@ -323,7 +326,7 @@ internal class StatusBarImpl(
      */
     override fun invasion() {
         isInvasion = true
-        activity.updateLayout(0)
+        softReference.get()?.updateLayout(0)
     }
 
     override fun isInvasion(): Boolean {
@@ -332,6 +335,8 @@ internal class StatusBarImpl(
 
     override fun unInvasion() {
         isInvasion = false
-        activity.updateLayout()
+        softReference.get()?.updateLayout()
     }
 }
+
+

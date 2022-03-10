@@ -22,7 +22,7 @@ import java.lang.reflect.Method
  */
 
 
-object DisplayCutoutHandler {
+class DisplayCutoutHandler {
     private var hasNotchInScreen: Boolean? = null
     private var hasNotchInScreenBody: ((Boolean?) -> Unit)? = null
 
