@@ -10,6 +10,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import java.lang.Exception
+import java.lang.ref.SoftReference
+import java.lang.ref.WeakReference
 import java.lang.reflect.Method
 
 
@@ -66,7 +68,7 @@ object DisplayCutoutHandler {
 
     fun checkHasNotchInScreen(activity: Activity) {
         if (hasNotchInScreen == null) {
-            hasNotchInScreen = activity.hasNotchInScreen
+            hasNotchInScreen = WeakReference(activity).get()?.hasNotchInScreen
             hasNotchInScreenBody?.invoke(hasNotchInScreen)
         }
     }
